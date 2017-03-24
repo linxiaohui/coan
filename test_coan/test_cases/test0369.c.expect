@@ -1,0 +1,7 @@
+Expanding "A in options
+Edit #001: >>(((1UL * -2) + -2U) / 3LLU)<<
+A: global: def. >>(((1UL * -2) + -2U) / 3LLU)<<: expands afresh as >>(((1UL * -2) + -2U) / 3LLU)<<: evaluates to 1431655764: in options
+Expanding "X in options
+Edit #001: >>A<<
+Edit #002: >>(((1UL * -2) + -2U) / 3LLU)<<
+X: global: def. >>A<<: expands afresh as >>(((1UL * -2) + -2U) / 3LLU)<<: evaluates to 1431655764: in options

@@ -1,0 +1,7 @@
+/**ARGS: source -m -DFOO=1 -UBAR  */
+/**SYSCODE: = 1 | 2| 16 | 32 */
+KEEP ME
+// error : inserted by coan: "#define BAR" contradicts -U or --implicit at {CWD}/test_cases/test0282.c(8)
+KEEP ME
+
+

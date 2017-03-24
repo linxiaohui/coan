@@ -1,0 +1,4 @@
+/**ARGS: source "-DFOO(x)=(x+1)" */
+/**SYSCODE: = 1 | 16 */
+KEEP ME
+

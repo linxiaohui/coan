@@ -1,0 +1,3 @@
+/**ARGS: source  -DFOO=1+1  */
+/**SYSCODE: = 1 | 2 | 32 */
+// error : inserted by coan: "#define FOO 1+ 1" differently redefines -D symbol at {CWD}/test_cases/test0234.c(3)

@@ -1,0 +1,2 @@
+FOO: global: expands afresh as >>0<<: evaluates to 0: in options
+E: unconfigured: insoluble: {CWD}/test_cases/test0358.c(16)

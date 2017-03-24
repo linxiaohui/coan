@@ -1,0 +1,8 @@
+/**ARGS: source -DFOO */
+/**SYSCODE: = 1 | 2 | 16 */
+
+#define A "def a"
+#define B "def b"
+#undef C
+KEEP ME
+

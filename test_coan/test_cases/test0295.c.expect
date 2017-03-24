@@ -1,0 +1,15 @@
+/**ARGS: source -kb -UDEFINE1 -UDEFINE3 */
+/**SYSCODE: = 1 | 32 */
+
+uint32 var; 
+ 
+#if  defined(DEFINE2)              
+
+
+uint32 var = 0;
+#endif
+
+void main()
+{
+    return var;
+}

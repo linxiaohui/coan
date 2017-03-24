@@ -1,0 +1,2 @@
+FOO(x,y): transient: def. >>FOO(x,y)=FOO(x+1,y+1)<<: insoluble, because of infinite regress
+FOO(0,0): transient: def. >>FOO(x,y)=FOO(x+1,y+1)<<: insoluble, because of infinite regress

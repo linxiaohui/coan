@@ -1,0 +1,779 @@
+<?xml version="1.0" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<title>Coan Man Page</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link rev="made" href="mailto:root@localhost" />
+</head>
+
+<body style="background-color: white">
+
+
+
+
+
+<table width="100%"><tr><td align="left">COAN(1)</td><td align="center">User Commands</td><td align="right">COAN(1)</td></tr></table>
+
+<h1 id="NAME">NAME</h1>
+
+<p>coan - C/C++ configuration analyser</p>
+
+<h1 id="SYNOPSIS">SYNOPSIS</h1>
+
+<p>coan COMMAND [OPTION...] [<i>file</i>...] [<i>directory</i>...]</p>
+
+<p>Where no files or directories are specified, input will be read from the standard input. The output of a command is written either to the standard output or to new files, depending upon the command and the options.</p>
+
+<h1 id="DESCRIPTION">DESCRIPTION</h1>
+
+<p>Coan is a tool for investigating configurations of C or C++ source code. A <i>configuration</i> is a (possibly empty) list of assumptions about the status of some preprocessor symbols when the source code is compiled. It may be assumed that a symbol is defined for the preprocessor, possibly with formal parameters and possibly with a specified definition, or it may be assumed that a symbol is undefined.</p>
+
+<p>It is important to understand that coan shall consider a symbol to be <i>undefined</i> only if there is an assumption to that effect, or if you use the <b>--implicit</b> option. By default, a symbol that is not mentioned in any assumption is considered to be <i>undetermined</i>.</p>
+
+<p>A configuration may be thought of as list of <b>#define</b> and/or <b>#undef</b> directives that are applied to every file in the source code to observe their effects. The source files might themselves contain <b>#define</b> or <b>#undef</b> directives that are active under the given configuration and which may influence its effects. To capture that influence, Coan temporarily adds each active <b>#define</b> or <b>#undef</b> directive to the configuration just for the duration of the source file in which it is found.</p>
+
+<p>Given a configuration and some source code, coan can answer a range of questions about how the source code would appear to the C/C++ preprocessor if that configuration of preprocessor symbols had been applied in advance.</p>
+
+<p>The most useful of the questions that coan can answer is: <i>What would the source code look like if re-written with all of the simplifications that follow from the given configuration?</i> Coan can produce the simplified re-write that answers this question. So, if the source code contains redundant preprocessor complexities that depend on the status of some preprocessor symbols, coan can be given a configuration that specifies the status of those symbols, and it will output an new version of the source code from which those redundant complexities have been eliminated. Or, if the source code is obscured by preprocessor logic that differentiates several variants by reference to preprocessor symbols, coan can be given a configuration that specifies any of these variants and will be able to generate a simpler version of the source code that represents only the specifed variant.</p>
+
+<p>Source code re-written by coan is <i>not</i> pre-processed code as produced by the preprocessor. It still contains comments, macro-invocations, and #-directives. It is still source code, but simplified.</p>
+
+<p>Other questions that coan can answer include ones about the preprocessor symbols that are invoked in the source code and their properties under a given configuration. For example: What symbol references would appear within <i>active</i> preprocessor directives under a given configuration, and could thus influence the preprocessor under that configuration? What are the macro-expansions of symbol references? How are those macro-expansions derived? What integer values would accrue to the symbol references that can be evaluated under a given configuration?</p>
+
+<p>Coan can also answer a range of questions about any category of preprocessor directive that might appear in the source code, e.g. What <b>#include</b> directives that import system header files would be active under a given configuration? When coan is invoked to identify the symbol references or directives that satisfy certain criteria, it will output a list of the references or directives of interest, and optionally their locations in the source code.</p>
+
+<h1 id="COMMANDS">COMMANDS</h1>
+
+<dl>
+
+<dt id="help"><b>help</b></dt>
+<dd>
+
+<p>Display a usage summary and exit.</p>
+
+</dd>
+<dt id="version"><b>version</b></dt>
+<dd>
+
+<p>Display version information and exit.</p>
+
+</dd>
+<dt id="source-OPTION...-file...-directory"><b>source</b> [OPTION...] [<i>file</i>...] [<i>directory</i>...]</dt>
+<dd>
+
+<p>Read the input files and rewrite them in accordance with the options.</p>
+
+</dd>
+<dt id="spin-OPTION...-file...-directory"><b>spin</b> [OPTION...] [<i>file</i>...] [<i>directory</i>...]</dt>
+<dd>
+
+<p>Like the <b>source</b>, with all output files organised beneath a specified directory mirroring their original structure.</p>
+
+</dd>
+<dt id="symbols-OPTION...-file...-directory"><b>symbols</b> [OPTION...] [<i>file</i>...] [<i>directory</i>...]</dt>
+<dd>
+
+<p>Select references of preprocessor symbols from the input files in accordance with the options and report them on the standard output in accordance with the options.</p>
+
+</dd>
+<dt id="includes-OPTION...-file...-directory"><b>includes</b> [OPTION...] [<i>file</i>...] [<i>directory</i>...]</dt>
+<dd>
+
+<p>Select <b>#include</b> directives from the input files in accordance with the options and report them on the standard output in accordance with the options.</p>
+
+</dd>
+<dt id="defs-OPTION...-file...-directory"><b>defs</b> [OPTION...] [<i>file</i>...] [<i>directory</i>...]</dt>
+<dd>
+
+<p>Select <b>#define</b> and <b>#undef</b> directives from the input files in accordance with the options and report them on the standard output in accordance with the options.</p>
+
+</dd>
+<dt id="pragmas-OPTION...-file...-directory"><b>pragmas</b> [OPTION...] [<i>file</i>...] [<i>directory</i>...]</dt>
+<dd>
+
+<p>Select <b>#pragma</b> directives from the input files in accordance with the options and report them on the standard output in accordance with the options.</p>
+
+</dd>
+<dt id="errors-OPTION...-file...-directory"><b>errors</b> [OPTION...] [<i>file</i>...] [<i>directory</i>...]</dt>
+<dd>
+
+<p>Select <b>#error</b> directives from the input files in accordance with the options and report them on the standard output in accordance with the options.</p>
+
+</dd>
+<dt id="lines-OPTION...-file...-directory"><b>lines</b> [OPTION...] [<i>file</i>...] [<i>directory</i>...]</dt>
+<dd>
+
+<p>Select <b>#line</b> directives from the input files in accordance with the options and report them on the standard output in accordance with the options.</p>
+
+</dd>
+<dt id="directives-OPTION...-file...-directory"><b>directives</b> [OPTION...] [<i>file</i>...] [<i>directory</i>...]</dt>
+<dd>
+
+<p>Select preprocessor directives from the input files in accordance with the options and report them on the standard output in accordance with the options.</p>
+
+</dd>
+</dl>
+
+<h1 id="OPTIONS">OPTIONS</h1>
+
+<h2 id="GENERAL-OPTIONS">GENERAL OPTIONS</h2>
+
+<p>These options may be given with any command.</p>
+
+<dl>
+
+<dt id="fargfile---file-argfile"><b>-f</b><i>argfile</i>, <b>--file</b> <i>argfile</i></dt>
+<dd>
+
+<p>Read (more) arguments from file <i>argfile</i>. Arguments may be written free-form, separated by whitespace, in <i>argfile</i>. These arguments will be parsed exactly as if they were listed on the commandline at the position of -<b>f</b><i>argfile</i>.</p>
+
+</dd>
+<dt id="Dsymbol-param1-param2...-definition---define-symbol-param1-param2...-definition"><b>-D</b><i>symbol</i>[<b>(</b><i>param1</i>[<b>,</b><i>param2</i>...]<b>)</b>]=<i>definition</i>, <b>--define</b> <i>symbol</i>[<b>(</b><i>param1</i>[<b>,</b><i>param2</i>...]<b>)</b>]=<i>definition</i></dt>
+<dd>
+
+<p>Assume that the macro definition <i>symbol</i>[<b>(</b><i>param1</i>[<b>,</b><i>param2</i>...]<b>)</b>]=<i>definition</i> is in force for processing the input file(s). If <b>=</b><i>definition</i> is unspecified then <i>string</i> defaults to the empty string.</p>
+
+</dd>
+<dt id="Usymbol---undef-symbol"><b>-U</b><i>symbol</i>, <b>--undef</b> <i>symbol</i></dt>
+<dd>
+
+<p>Assume that the macro <i>symbol</i> is undefined for processing the input file(s).</p>
+
+</dd>
+<dt id="m---implicit"><b>-m</b>, <b>--implicit</b></dt>
+<dd>
+
+<p>Assume that any symbol that is not <b>--define</b>-ed is implicitly <b>--undef</b>-ed.</p>
+
+<p>This option is not allowed to have the perverse effect that an initial invocation, with arguments, of an unconfigured symbol, e.g. <i>sym</i><b>(</b><i>a,b</i><b>)</b>, is expanded as <b>0(</b><i>a,b</i><b>)</b> to provoke a syntax error. The invocation is taken to imply that <i>sym</i> has a conforming but unknown definition and is passed through unresolved. However, once <i>sym</i> has been invoked either with arguments or without then subsequent invocations are expected to be of the same form unless <i>sym</i> is redefined or undefined in the meanwhile.</p>
+
+</dd>
+<dt id="R---recurse"><b>-R</b>, <b>--recurse</b></dt>
+<dd>
+
+<p>Recurse into directories to find input files. (With the <b>source</b> command, <b>--recurse</b> implies <b>--replace</b>). With <b>--recurse</b>, the input files may include directories: otherwise a directory provokes a non-fatal error.</p>
+
+<p>All files beneath a directory will be selected for input unless the <b>--filter</b> option is given: otherwise all files will be selected that match the <b>--filter</b> option.</p>
+
+<p>When <b>--recurse</b> is in effect, <b>coan</b> builds a graph of all unique input files once and for all as it parses the filenames that are explicitly supplied and before it processes any of them. New files that may later appear in input directories during execution will not be processed, and files that have disappeared from input directories when they are due to be processed will provoke fatal errors.</p>
+
+</dd>
+<dt id="Fext1-ext2...---filter-ext1-ext2"><b>-F</b><i>ext1</i>[<b>,</b><i>ext2</i>...], <b>--filter</b> <i>ext1</i>[<b>,</b><i>ext2</i>...]</dt>
+<dd>
+
+<p>Process only input files that have one of the file extensions <i>ext1</i>,<i>ext2</i>... A file extension is the terminal segment of a filename that immediately follows the final &#39;.&#39;.</p>
+
+</dd>
+<dt id="g-p-i-w-e-a---gag-progress-info-warning-error-abend"><b>-g</b>[<b>p</b>|<b>i</b>|<b>w</b>|<b>e</b>|<b>a</b>], <b>--gag</b> [<b>progress</b> | <b>info</b> | <b>warning</b> | <b>error</b> | <b>abend</b>]</dt>
+<dd>
+
+<p>Suppress diagnostics no worse than [<b>progress</b> | <b>info</b> | <b>warning</b> | <b>error</b> | <b>abend</b>].</p>
+
+</dd>
+<dt id="gs---gag-summary"><b>-gs</b>, <b>--gag summary</b>.</dt>
+<dd>
+
+<p>Suppress summary diagnostics at end of input.</p>
+
+</dd>
+<dt id="V---verbose"><b>-V</b>, <b>--verbose</b></dt>
+<dd>
+
+<p>Output all diagnostics,</p>
+
+<p>If neither <b>-V</b> nor <b>-g</b><i>arg</i> is specified <b>defaults</b> are <b>-gp -gi -gs</b>.</p>
+
+</dd>
+<dt id="E---evalconsts"><b>-E</b>, <b>--evalconsts</b></dt>
+<dd>
+
+<p>Constants occurring as truth-functional operands in <b>#if</b> expressions shall be evaluated and eliminated. By default constants as truth-functional operands are treated as unknowns, i.e. like macros that are not subject to any assumptions. Constants are always evaluated and eliminated when they are arithmetic or bitwise operands.</p>
+
+<p>The default behaviour preserves &quot;work-in-progress&quot; directives such as <b>#if 1</b> and <b>#if 0</b> along with the code they control. With <b>--evalconsts</b> these directives are evaluated.</p>
+
+</dd>
+<dt id="K---keepgoing"><b>-K</b>, <b>--keepgoing</b></dt>
+<dd>
+
+<p>If a parse error is encountered in an input file, continue processing subsequent input files. An event of severity <b>abend</b> will terminate processing regardless of <b>--keepgoing</b>.</p>
+
+</dd>
+<dt id="no-transients"><b>--no-transients</b></dt>
+<dd>
+
+<p>By default an in-source <b>#define</b> <i>SYM</i> or <b>#undef</b> <i>SYM</i> directive is transiently treated as a <b>-D</b><i>SYM</i> or <b>-U</b><i>SYM</i> option within the source file where it is found. This option suppresses the default behaviour at your own risk.</p>
+
+</dd>
+<dt id="P---pod"><b>-P</b>, <b>--pod</b></dt>
+<dd>
+
+<p>Apart from #-directives, input is to be treated as Plain Old Data. C or C++ comments and quotations will not be parsed.</p>
+
+</dd>
+</dl>
+
+<h2 id="OPTIONS-FOR-THE-source-COMMAND">OPTIONS FOR THE source COMMAND</h2>
+
+<dl>
+
+<dt id="r---replace"><b>-r</b>, <b>--replace</b></dt>
+<dd>
+
+<p>Replace each input file with the corresponding output file. <i>This option must be specified to process multiple input files</i>.</p>
+
+<p>The option changes the default behaviour of the command when no input files are specified. In that case, input is acquired from the standard input. If <b>--replace</b> is <i>not</i> specified, then a single input file is read from the standard input. If <b>--replace</b> is specified then the <i>names</i> of the input files are read from the standard input. Note that the <b>--recurse</b> option implies <b>--replace</b>.</p>
+
+<p>If you wish to preserve the original files with the <b>--replace</b> option, use the <b>--backup</b> option as well.</p>
+
+<p>If the names of the input files are read from <b>stdin</b>, the filenames are delimited by whitespace unless enclosed in double-quotes.</p>
+
+</dd>
+<dt id="bsuffix---backup-suffix"><b>-b</b><i>suffix</i>, <b>--backup</b> <i>suffix</i></dt>
+<dd>
+
+<p>Backup each input file before replacing it, the backup file having the same name as the input file with <i>suffix</i> appended to it.</p>
+
+</dd>
+<dt id="x-d-c-e---conflict-delete-comment-error"><b>-x</b>[<b>d</b>|<b>c</b>|<b>e</b>], <b>--conflict</b> [<b>delete</b> | <b>comment</b> | <b>error</b>]</dt>
+<dd>
+
+<p>Select the action to be taken when a <b>#define</b> or <b>#undef</b> directive is encountered in an input file that conflicts with one of the <b>-D</b> or <b>-U</b> assumptions:</p>
+
+<p><b>d</b>, <b>delete</b>: Delete the conflicting directive.</p>
+
+<p><b>c</b>, <b>comment</b>: Replace the conflicting directive with a diagnostic comment (<b>default</b>).</p>
+
+<p><b>e</b>, <b>error</b>: Replace the conflicting directive with a diagnostic <b>#error</b> directive.</p>
+
+</dd>
+<dt id="k-d-b-c---discard-drop-blank-comment"><b>-k</b>[<b>d</b>|<b>b</b>|<b>c</b>], <b>--discard</b> [<b>drop</b> | <b>blank</b> | <b>comment</b>]</dt>
+<dd>
+
+<p>Select the policy for discarding lines from output:</p>
+
+<p><b>d</b>, <b>drop</b>: Drop discarded lines.</p>
+
+<p><b>b</b>, <b>blank</b>: Blank discarded lines.</p>
+
+<p><b>c</b>, <b>comment</b>: Comment out discarded lines.</p>
+
+</dd>
+<dt id="line"><b>--line</b></dt>
+<dd>
+
+<p>Output <b>#line</b> directives in place of discarded lines to preserve the line numbers of retained lines.</p>
+
+</dd>
+<dt id="c---complement"><b>-c</b>, <b>--complement</b></dt>
+<dd>
+
+<p>Ouput the lines that ought to be dropped and vice versa.</p>
+
+</dd>
+</dl>
+
+<h2 id="OPTIONS-FOR-THE-spin-COMMAND">OPTIONS FOR THE spin COMMAND</h2>
+
+<p>The <b>--recurse</b> and <b>--replace</b> options are implied for this command.</p>
+
+<dl>
+
+<dt id="x-d-c-e---conflict-delete-comment-error1"><b>-x</b>[<b>d</b>|<b>c</b>|<b>e</b>], <b>--conflict</b> [<b>delete</b> | <b>comment</b> | <b>error</b>]</dt>
+<dd>
+
+<p>Select the action to be taken when a <b>#define</b> or <b>#undef</b> directive is encountered in an input file that conflicts with one of the <b>-D</b> or <b>-U</b> assumptions:</p>
+
+<p><b>d</b>, <b>delete</b>: Delete the conflicting directive.</p>
+
+<p><b>c</b>, <b>comment</b>: Replace the conflicting directive with a diagnostic comment (<b>default</b>).</p>
+
+<p><b>e</b>, <b>error</b>: Replace the conflicting directive with a diagnostic <b>#error</b> directive.</p>
+
+</dd>
+<dt id="k-d-b-c---discard-drop-blank-comment1"><b>-k</b>[<b>d</b>|<b>b</b>|<b>c</b>], <b>--discard</b> [<b>drop</b> | <b>blank</b> | <b>comment</b>]</dt>
+<dd>
+
+<p>Select the policy for discarding lines from output:</p>
+
+<p><b>d</b>, <b>drop</b>: Drop discarded lines.</p>
+
+<p><b>b</b>, <b>blank</b>: Blank discarded lines.</p>
+
+<p><b>c</b>, <b>comment</b>: Comment out discarded lines.</p>
+
+</dd>
+<dt id="line1"><b>--line</b></dt>
+<dd>
+
+<p>Output <b>#line</b> directives in place of discarded lines to preserve the line numbers of retained lines.</p>
+
+</dd>
+<dt id="c---complement1"><b>-c</b>, <b>--complement</b></dt>
+<dd>
+
+<p>Ouput the lines that ought to be dropped and vice versa.</p>
+
+</dd>
+<dt id="dir-dirname"><b>--dir</b> <i>dirname</i></dt>
+<dd>
+
+<p>Generate a spin under the directory <i>dirname</i>. The output files are generated relative to <i>dirname</i>, mirroring their original structure. <i>dirname</i> and subdirectories will be created as required. Pre-existing output files will be overwritten. A fatal error is given if <i>dirname</i> includes, or is included by or is identical with any input <i>directory</i>.</p>
+
+</dd>
+<dt id="ppathame---prefix-pathname"><b>-p</b><i>pathame</i>, <b>--prefix</b> <i>pathname</i></dt>
+<dd>
+
+<p>In organising output files beneath the spin directory <i>dir</i>, <i>dir</i> will equated with the path prefix <i>pathname</i> of any input file. This enables any common prefix of all input files to be deleted from all the outout files under <i>dir</i> if desired.</p>
+
+</dd>
+</dl>
+
+<h2 id="OPTIONS-FOR-THE-symbols-COMMAND">OPTIONS FOR THE symbols COMMAND</h2>
+
+<dl>
+
+<dt id="i---ifs"><b>-i</b>, <b>--ifs</b></dt>
+<dd>
+
+<p>List symbol references that occur in <b>#if</b>, <b>#if[n]def</b> and <b>#elif</b> directives.</p>
+
+</dd>
+<dt id="d---defs"><b>-d</b>, <b>--defs</b></dt>
+<dd>
+
+<p>List symbol references that occur in <b>#define</b> directives.</p>
+
+</dd>
+<dt id="u---undefs"><b>-u</b>, <b>--undefs</b></dt>
+<dd>
+
+<p>List symbol references that occur in <b>#undef</b> directives.</p>
+
+</dd>
+<dt id="includes"><b>--includes</b></dt>
+<dd>
+
+<p>List symbol references that occur in <b>#include</b> directives.</p>
+
+</dd>
+<dt id="lns"><b>--lns</b></dt>
+<dd>
+
+<p>List symbol references that occur in <b>#line</b> directives.</p>
+
+</dd>
+</dl>
+
+<p>If none of <b>-i</b>, <b>-d</b>, <b>-u</b>, <b>--includes</b> or <b>--lns</b> is given then they are all <b>defaults</b>.</p>
+
+<dl>
+
+<dt id="o---once-only"><b>-o</b>, <b>--once-only</b></dt>
+<dd>
+
+<p>List only the first ocurrence of each distinct reference of a symbol.</p>
+
+</dd>
+<dt id="once-per-file"><b>--once-per-file</b></dt>
+<dd>
+
+<p>List only the first ocurrence per input file of each distinct reference of a symbol.</p>
+
+</dd>
+</dl>
+
+<p>If neither <b>--once-only</b> nor <b>--once-per-file</b> is given then all of a symbol&#39;s references are listed.</p>
+
+<dl>
+
+<dt id="A---active"><b>-A</b>, <b>--active</b></dt>
+<dd>
+
+<p>List only references from operative directives.</p>
+
+</dd>
+<dt id="I---inactive"><b>-I</b>, <b>--inactive</b></dt>
+<dd>
+
+<p>List only references from inoperative directives.</p>
+
+</dd>
+<dt id="L---locate"><b>-L</b>, <b>--locate</b></dt>
+<dd>
+
+<p>Report the source file and line number of each listed reference.</p>
+
+</dd>
+<dt id="e---expand"><b>-e</b>, <b>--expand</b></dt>
+<dd>
+
+<p>Report the macro expansion of each reported symbol reference, and the integer to which it evaluates, if any. An expansion will be reported for a reference of the symbol <i>symbol</i> if <i>symbol</i> is configured by a <b>-D</b>option or a <b>-U</b> option, or transiently configured by a <b>#define</b> or <b>#undef</b> directive in the current file.</p>
+
+<p>In the case <b>-D</b><i>symbol</i>, the expansion of <i>symbol</i> is the empty string (since that is the C preprocessor&#39;s default definition for defined symbols).</p>
+
+<p>In the case <b>-U</b><i>symbol</i>, the expansion of <i>symbol</i> is the numeral <b>0</b> (since 0 is the value assigned by the preprocessor to an undefined symbol).</p>
+
+<p>In the case <b>-D</b><i>symbol</i>[<b>(</b><i>param1</i>[<b>,</b><i>param2</i>...]<b>)</b>]=<i>definition</i>, the expansion of the reference is the string that results by, first, substituting the arguments of the references, if any, for the corresponding formal parameters of the symbol in its definition and then recursively replacing each symbol reference in the result with its expansion.</p>
+
+<p>If a symbol is not configured then its references are reported as <b>insoluble</b>. Likewise if it is configured but a reference has a circular expansion.</p>
+
+</dd>
+<dt id="explain"><b>--explain</b></dt>
+<dd>
+
+<p>Report the successive steps of macro expansion for each reported symbol reference. Implies <b>--expand</b></p>
+
+</dd>
+<dt id="select-name1-name2"><b>--select</b> <i>name1</i>[<b>*</b>][,<i>name2</i>[<b>*</b>]...]</dt>
+<dd>
+
+<p>Select by name the symbols to be reported. A symbol reference will be reported only if its name matches one of the comma-separated names or <b>*</b>-terminated names. A <b>*</b>-terminated name is interpreted as a wildcard name prefix. If not specified then <b>--select *</b> is the default.</p>
+
+</dd>
+</dl>
+
+<h2 id="OPTIONS-FOR-THE-includes-COMMAND">OPTIONS FOR THE includes COMMAND</h2>
+
+<dl>
+
+<dt id="s---system"><b>-s</b>, <b>--system</b></dt>
+<dd>
+
+<p>List system headers, e.g. &lt;header.h&gt;</p>
+
+</dd>
+<dt id="l---local"><b>-l</b>, <b>--local</b></dt>
+<dd>
+
+<p>List local headers, e.g. &quot;header.h&quot;</p>
+
+</dd>
+</dl>
+
+<p>If neither <b>-s</b> or <b>-L</b> is given then both are <b>defaults</b>.</p>
+
+<dl>
+
+<dt id="o---once-only1"><b>-o</b>, <b>--once-only</b></dt>
+<dd>
+
+<p>List only the first occurrence of each header.</p>
+
+</dd>
+<dt id="once-per-file1"><b>--once-per-file</b></dt>
+<dd>
+
+<p>List only the first occurrence per input file of each header.</p>
+
+</dd>
+</dl>
+
+<p>If neither <b>--once-only</b> nor <b>--once-per-file</b> is given then all occurrences of a header are listed.</p>
+
+<dl>
+
+<dt id="A---active1"><b>-A</b>, <b>--active</b></dt>
+<dd>
+
+<p>List only headers from operative directives.</p>
+
+</dd>
+<dt id="I---inactive1"><b>-I</b>, <b>--inactive</b></dt>
+<dd>
+
+<p>List only headers from inoperative directives.</p>
+
+</dd>
+<dt id="L---locate1"><b>-L</b>, <b>--locate</b></dt>
+<dd>
+
+<p>Report the source file and line number of each listed occurrence</p>
+
+</dd>
+</dl>
+
+<h2 id="OPTIONS-FOR-THE-defs-COMMAND">OPTIONS FOR THE defs COMMAND</h2>
+
+<dl>
+
+<dt id="o---once-only2"><b>-o</b>, <b>--once-only</b></dt>
+<dd>
+
+<p>List only the first occurrence of each distinct <b>#define</b> or <b>#undef</b> directive.</p>
+
+</dd>
+<dt id="once-per-file2"><b>--once-per-file</b></dt>
+<dd>
+
+<p>List only the first occurrence per input file of each distinct <b>#define</b> or <b>#undef</b> directive.</p>
+
+<p>For the purpose of determining whether two occurrences express the same directive or not, coan reduces the text of each occurrence to a <i>canonical form</i>, i.e. all comments are stripped out, all whitespace sequences are collapsed to a single space and all tokens are separated by a single space. This applies for all commands that accept the <b>--once-only</b> or <b>--once-per-file</b> option.</p>
+
+</dd>
+</dl>
+
+<p>If neither <b>--once-only</b> nor <b>--once-per-file</b> is given then all occurrences of a distinct <b>#define</b> or <b>#undef</b> directive are listed.</p>
+
+<dl>
+
+<dt id="A---active2"><b>-A</b>, <b>--active</b></dt>
+<dd>
+
+<p>List only operative <b>#define</b> and <b>#undef</b> directives.</p>
+
+</dd>
+<dt id="I---inactive2"><b>-I</b>, <b>--inactive</b></dt>
+<dd>
+
+<p>List only inoperative <b>#define</b> and <b>#undef</b> directives.</p>
+
+</dd>
+<dt id="L---locate2"><b>-L</b>, <b>--locate</b></dt>
+<dd>
+
+<p>Report the source file and line number of each listed occurrence.</p>
+
+</dd>
+</dl>
+
+<h2 id="OPTIONS-FOR-THE-pragmas-COMMAND">OPTIONS FOR THE pragmas COMMAND</h2>
+
+<dl>
+
+<dt id="o---once-only3"><b>-o</b>, <b>--once-only</b></dt>
+<dd>
+
+<p>List only the first occurrence of each distinct pragma.</p>
+
+</dd>
+<dt id="once-per-file3"><b>--once-per-file</b></dt>
+<dd>
+
+<p>List only the first occurrence per input file of each distinct pragma.</p>
+
+</dd>
+</dl>
+
+<p>If neither <b>--once-only</b> nor <b>--once-per-file</b> is given then all occurrences of a pragma are listed.</p>
+
+<dl>
+
+<dt id="A---active3"><b>-A</b>, <b>--active</b></dt>
+<dd>
+
+<p>List only operative pragmas.</p>
+
+</dd>
+<dt id="I---inactive3"><b>-I</b>, <b>--inactive</b></dt>
+<dd>
+
+<p>List only inoperative pragmas.</p>
+
+</dd>
+<dt id="L---locate3"><b>-L</b>, <b>--locate</b></dt>
+<dd>
+
+<p>Report the source file and line number of each listed occurrence.</p>
+
+</dd>
+</dl>
+
+<h2 id="OPTIONS-FOR-THE-errors-COMMAND">OPTIONS FOR THE errors COMMAND</h2>
+
+<dl>
+
+<dt id="o---once-only4"><b>-o</b>, <b>--once-only</b></dt>
+<dd>
+
+<p>List only the first occurrence of each <b>#error</b> directive.</p>
+
+</dd>
+<dt id="once-per-file4"><b>--once-per-file</b></dt>
+<dd>
+
+<p>List only the first occurrence per input file of each <b>#error</b> directive.</p>
+
+</dd>
+</dl>
+
+<p>If neither <b>--once-only</b> nor <b>--once-per-file</b> is given then all occurrences of a distinct <b>#error</b> directive are listed.</p>
+
+<dl>
+
+<dt id="A---active4"><b>-A</b>, <b>--active</b></dt>
+<dd>
+
+<p>List only operative <b>#error</b> directives.</p>
+
+</dd>
+<dt id="I---inactive4"><b>-I</b>, <b>--inactive</b></dt>
+<dd>
+
+<p>List only inoperative <b>#error</b> directives.</p>
+
+</dd>
+<dt id="L---locate4"><b>-L</b>, <b>--locate</b></dt>
+<dd>
+
+<p>Report the source file and line number of each listed occurrence.</p>
+
+</dd>
+</dl>
+
+<h2 id="OPTIONS-FOR-THE-directives-COMMAND">OPTIONS FOR THE directives COMMAND</h2>
+
+<dl>
+
+<dt id="o---once-only5"><b>-o</b>, <b>--once-only</b></dt>
+<dd>
+
+<p>List only the first occurrence of each distinct directive.</p>
+
+</dd>
+<dt id="once-per-file5"><b>--once-per-file</b></dt>
+<dd>
+
+<p>List only the first occurrence per input file of each distinct directive.</p>
+
+</dd>
+</dl>
+
+<p>If neither <b>--once-only</b> nor <b>--once-per-file</b> is given then all occurrences of a distinct directive are listed.</p>
+
+<dl>
+
+<dt id="A---active5"><b>-A</b>, <b>--active</b></dt>
+<dd>
+
+<p>List only operative directives.</p>
+
+</dd>
+<dt id="I---inactive5"><b>-I</b>, <b>--inactive</b></dt>
+<dd>
+
+<p>List only inoperative directives.</p>
+
+</dd>
+<dt id="L---locate5"><b>-L</b>, <b>--locate</b></dt>
+<dd>
+
+<p>Report the source file and line number of each listed occurrence.</p>
+
+</dd>
+</dl>
+
+<h1 id="DIAGNOSTICS">DIAGNOSTICS</h1>
+
+<p>Diagnostics written to stderr are classified by severity. Each diagnostic includes a distinct hexadecimal code of the form 0xXXXXX that encodes its severity. The 5 severities are:</p>
+
+<dl>
+
+<dt id=""></dt>
+<dd>
+
+<p><b>progress</b>: Progress messages (0xXXXXX &amp; 0x00800 is true)</p>
+
+<p><b>info</b>: Noteworthy information (0xXXXXX &amp; 0x01000 is true)</p>
+
+<p><b>warning</b>: Indicating problematic input (0xXXXXX &amp; 0x02000 is true)</p>
+
+<p><b>error</b>: Indicating invalid input (0xXXXXX &amp; 0x04000 is true)</p>
+
+<p><b>abend</b>: Indicating a fatal environment or internal error (0xXXXXX &amp; 0x08000 is true)</p>
+
+</dd>
+</dl>
+
+<p>If <b>--gag summary</b> is not in force, coan can write summary diagnostics at the end of processing. A summary diagnostic has a hexadecimal code <b>S</b> that encodes one of the severities and in addition <b>S</b> &amp; 0x10000 is true. Even if <b>--gag summary</b> is not in force, a summary will not be written if its severity is suppressed by one of the specified or default <b>--gag</b> options. Since all summaries have severity <i>info</i> or <i>warning</i>, and since the <b>--gag</b> defaults are <b>info</b>, <b>warning</b> and <b>summary</b>, you should specify <b>--gag info</b> to see only warning summaries, and to see all summaries you should specify <b>--verbose</b>. The summaries include:</p>
+
+<dl>
+
+<dt id="1"></dt>
+<dd>
+
+<p><b>info</b>: The number of input files that were reached and the number that were not reached (due to abend).</p>
+
+<p><b>info</b>: The number of input files reached that were abandoned (due to errors).</p>
+
+</dd>
+</dl>
+
+<p>If there was no abend or error, then additional summaries are written (unless suppressed) indicating each of the following outcomes that has occurred:</p>
+
+<dl>
+
+<dt id="2"></dt>
+<dd>
+
+<p><b>info</b>: Input lines were dropped through simplification.</p>
+
+<p><b>info</b>: Input lines were changed through simplification. If the option <b>--discard comment</b> is in effect, causing discarded lines to be commented out, then discarded lines are counted as changed, not dropped.</p>
+
+<p><b>warning</b>: Input lines were changed to <b>#error</b> directives.</p>
+
+<p><b>warning</b>: <b>#error</b> directives were operative (either in the input source or as a result of simplification).</p>
+
+</dd>
+</dl>
+
+<p>Coan returns a system code <b>SC</b> of which the low order half of the low order byte is always meaningful:</p>
+
+<dl>
+
+<dt id="3"></dt>
+<dd>
+
+<p><b>SC</b> &amp; 1: Informational diagnostics accrued.</p>
+
+<p><b>SC</b> &amp; 2: Warnings diagnostics accrued.</p>
+
+<p><b>SC</b> &amp; 4: Error diagnostics accrued. (Input files provoking errors will be unchanged notwithstanding the <b>--replace</b> option.)</p>
+
+<p><b>SC</b> &amp; 8: An abend occurred. Some input files may not have been reached.</p>
+
+</dd>
+</dl>
+
+<p>If no error or abend is indicated, then the high order half of the low order byte is also meaningful:</p>
+
+<dl>
+
+<dt id="4"></dt>
+<dd>
+
+<p><b>SC</b> &amp; 16: Input lines were dropped through simplification.</p>
+
+<p><b>SC</b> &amp; 32: Input lines were changed through simplification.</p>
+
+<p><b>SC</b> &amp; 64: Input lines were changed to <b>#error</b> directives.</p>
+
+<p><b>SC</b> &amp; 128: <b>#error</b> directives were operative.</p>
+
+</dd>
+</dl>
+
+<p>The system code reflects diagnostics that were provoked even if they were not actually output due to <b>--gag</b> options.</p>
+
+<h1 id="BUGS">BUGS</h1>
+
+<p>Trigraphs are not parsed.</p>
+
+<p>Files that are <b>#include</b>-ed by input files are not parsed, hence any <b>#define</b> or <b>#undef</b> directives they contain will not be factored into the evaluation of the file.</p>
+
+<p>Please report bugs to bugs dot coan at burroingroingjoing dot com</p>
+
+<h1 id="AUTHOR">AUTHOR</h1>
+
+<p>Mike Kinghan imk at burroingroingjoing dot com</p>
+
+
+
+<p><table width="100%"><tr><td align="left">burroingroingjoing.com</td><td align="center">AUGUST 2014</td><td align="right">COAN(1)</td></tr></table>
+
+
+</body>
+
+</html>
+
+

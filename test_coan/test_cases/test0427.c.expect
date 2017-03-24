@@ -1,0 +1,1 @@
+FOO(x): transient: expands afresh as >>(x + 1)<<: {CWD}/test_cases/test0427.c(3)

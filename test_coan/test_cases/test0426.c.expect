@@ -1,0 +1,3 @@
+FOO(x,y): transient: expands afresh as >>(x ? X y ? Y)<<: {CWD}/test_cases/test0426.c(3)
+X: transient: expands afresh as >>1<<: evaluates to 1: {CWD}/test_cases/test0426.c(4)
+Y: transient: expands afresh as >>2<<: evaluates to 2: {CWD}/test_cases/test0426.c(5)

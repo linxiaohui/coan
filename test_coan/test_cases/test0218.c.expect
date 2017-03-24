@@ -1,0 +1,4 @@
+FOO: global: {CWD}/test_cases/test0218.c(7)
+SYM: unconfigured: {CWD}/test_cases/test0218.c(8)
+BAR: global: {CWD}/test_cases/test0218.c(15)
+SYM: unconfigured: {CWD}/test_cases/test0218.c(16)

@@ -1,0 +1,16 @@
+Expanding "AND in options
+Edit #001: >>And<<
+AND: global: def. >>And<<: expands afresh as >>And<<: in options
+Expanding "BAR in options
+Edit #001: >>3<<
+BAR: global: def. >>3<<: expands afresh as >>3<<: evaluates to 3: in options
+Expanding "FOO in options
+Edit #001: >>(1+1)<<
+FOO: global: def. >>(1+1)<<: expands afresh as >>(1+1)<<: evaluates to 2: in options
+Expanding "SYM in options
+Edit #001: >>(FOO AND (FOO And BAR) And BAR)<<
+Edit #002: >>((1+1) AND ((1+1) And BAR) And BAR)<<
+Edit #003: >>((1+1) And ((1+1) And BAR) And BAR)<<
+Edit #004: >>((1+1) And ((1+1) And 3) And 3)<<
+SYM: global: def. >>(FOO AND (FOO And BAR) And BAR)<<: expands afresh as >>((1+1) And ((1+1) And 3) And 3)<<: in options
+SYM: global: def. >>(FOO AND (FOO And BAR) And BAR)<<: expands unchanged as >>((1+1) And ((1+1) And 3) And 3)<<

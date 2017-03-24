@@ -1,0 +1,6 @@
+/**ARGS: source -DZ */
+/**SYSCODE: = 16 | 2 | 1 */
+#define X 1
+#define Y 2
+#define FOO(X,Y) (X+Y)
+KEEP ME

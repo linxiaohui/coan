@@ -1,0 +1,11 @@
+/**ARGS: source "-DX=(65<<8)|66" */
+/**SYSCODE: = 1 | 2 | 16 */
+KEEP ME
+KEEP ME
+KEEP ME
+#if (65 << 32) | (66 << 24) | (67 << 16) | (68 << 8) | 69 == 'ABCDE'
+KEEP ME PLUS ENDIF
+#endif
+KEEP ME
+KEEP ME
+KEEP ME

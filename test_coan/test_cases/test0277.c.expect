@@ -1,0 +1,2 @@
+FOO: global: expands afresh as >><stdlib.b><<: in options
+TRUE: global: expands afresh as >>1<<: evaluates to 1: in options

@@ -1,0 +1,15 @@
+/**ARGS: source --discard comment -DFOO1 -UFOO2 -DBAR1 -UBAR2 */
+/**SYSCODE: = 1 | 32 */
+//coan < #ifdef FOO1
+//coan < 	#ifndef FOO2
+	KEEP ME
+//coan < 	#else
+//coan < 	DELETE ME
+//coan < 	#endif
+//coan < #else
+//coan < 	#ifdef BAR1
+//coan < 	DELETE ME
+//coan < 	#else
+//coan < 	DELETE ME
+//coan < 	#endif
+//coan < #endif 

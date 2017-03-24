@@ -1,0 +1,12 @@
+Testing Coan
+============
+
+This directory contains the test harness that is built and executed by `make check' The test harness
+executes each of the perl scripts (.pl files) in this directory. Any of these scripts can be run
+independantly with a command like:
+
+perl -I ../perl test_script.pl
+
+If no options are passed to test_script.pl it will be run with the defaults that are used by
+`make check'. The available options can be listed by running the script with the option --help
+

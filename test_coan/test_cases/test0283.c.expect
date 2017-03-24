@@ -1,0 +1,9 @@
+/**ARGS: source -kc -UBAR */
+/**SYSCODE: = 1 | 32 */
+
+//coan < #ifdef BAR
+//coan < /* A
+//coan < multiline
+//coan < comment */
+//coan < #endif
+

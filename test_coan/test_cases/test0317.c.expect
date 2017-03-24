@@ -1,0 +1,2 @@
+#include HDR: symbolic argument, expands as >><foo.h><<: {CWD}/test_cases/test0317.c(4)
+#include HDR: symbolic argument, expands as >>"bar.h"<<: {CWD}/test_cases/test0317.c(7)

@@ -1,0 +1,6 @@
+Expanding "SYM in options
+Edit #001: >>FOO+BAR<<
+Edit #002: >>1+1+BAR<<
+Edit #003: >>1+1+3<<
+SYM: global: def. >>FOO+BAR<<: expands afresh as >>1+1+3<<: evaluates to 5: in options
+SYM: global: def. >>FOO+BAR<<: expands unchanged as >>1+1+3<<: evaluates to 5

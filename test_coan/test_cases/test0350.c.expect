@@ -1,0 +1,5 @@
+FOO: global: expands afresh as >>1<<: evaluates to 1: in options
+FOO: global: expands unchanged as >>1<<: evaluates to 1: {CWD}/test_cases/test0350.c(4)
+BAR: transient: expands afresh as >>(1 ? 1 : 0)<<: evaluates to 1: {CWD}/test_cases/test0350.c(4)
+BAR: transient: expands unchanged as >>(1 ? 1 : 0)<<: evaluates to 1: {CWD}/test_cases/test0350.c(5)
+BAR: transient: expands afresh as >>0<<: evaluates to 0: {CWD}/test_cases/test0350.c(6)

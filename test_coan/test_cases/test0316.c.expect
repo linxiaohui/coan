@@ -1,0 +1,6 @@
+FOO: transient: expands afresh as >>1<<: evaluates to 1: {CWD}/test_cases/test0316.c(3)
+BAR: transient: expands afresh as >>2<<: evaluates to 2: {CWD}/test_cases/test0316.c(5)
+FOO: transient: expands afresh as >>0<<: evaluates to 0: {CWD}/test_cases/test0316.c(7)
+FOO: transient: expands afresh as >>3<<: evaluates to 3: {CWD}/test_cases/test0316.c(8)
+BAR: transient: expands afresh as >>0<<: evaluates to 0: {CWD}/test_cases/test0316.c(9)
+BAR: transient: expands afresh as >>4<<: evaluates to 4: {CWD}/test_cases/test0316.c(10)

@@ -1,0 +1,4 @@
+#if !(1 && FOO1)
+DELETE ME
+#else
+#endif

@@ -1,0 +1,3 @@
+/**ARGS: source -DFOO */
+/**SYSCODE: = 4 */
+/**NO-OUTPUT **/

@@ -1,0 +1,21 @@
+Expanding "YY" at {CWD}/test_cases/test0375.c(4)
+Edit #001: >>XX<<
+Edit #002: >>A<<
+YY: transient: def. >>XX<<: expands afresh as >>A<<: {CWD}/test_cases/test0375.c(4)
+YY: transient: def. >>XX<<: expands unchanged as >>A<<: {CWD}/test_cases/test0375.c(5)
+Expanding "ZZ" at {CWD}/test_cases/test0375.c(5)
+Edit #001: >>YY<<
+Edit #002: >>XX<<
+Edit #003: >>A<<
+ZZ: transient: def. >>YY<<: expands afresh as >>A<<: {CWD}/test_cases/test0375.c(5)
+Expanding "A" at {CWD}/test_cases/test0375.c(7)
+Edit #001: >>1<<
+A: transient: def. >>1<<: expands afresh as >>1<<: evaluates to 1: {CWD}/test_cases/test0375.c(7)
+Expanding "YY" at {CWD}/test_cases/test0375.c(8)
+Edit #001: >>XX<<
+Edit #002: >>A<<
+Edit #003: >>1<<
+YY: transient: def. >>XX<<: expands afresh as >>1<<: evaluates to 1: {CWD}/test_cases/test0375.c(8)
+Expanding "A" at {CWD}/test_cases/test0375.c(9)
+Edit #001: >>0<<
+A: transient: undef: expands afresh as >>0<<: evaluates to 0: {CWD}/test_cases/test0375.c(9)

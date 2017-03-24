@@ -1,0 +1,8 @@
+/**ARGS: source -DNUM=1 "-DBAR(x,y)=x-y" "-DFOO(x,y)=x*y"  */
+/**SYSCODE: = 1 | 2 | 16 */
+KEEP ME
+KEEP ME
+#define FOOBAR( x , y , z )  (FOO( x , y) || BAR(y ,z))
+KEEP ME
+KEEP ME
+

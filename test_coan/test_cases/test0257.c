@@ -1,0 +1,6 @@
+/**ARGS: source -DBIG=9223372036854775808 */
+/**SYSCODE: = 1 | 2 | 16 */
+#if ( BIG == 9223372036854775808 )
+KEEP ME
+#endif
+

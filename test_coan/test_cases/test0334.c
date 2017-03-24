@@ -1,0 +1,9 @@
+/**ARGS: source */
+/**SYSCODE: = 2 */
+
+#define FOO 0x01/* adjacent comment */
+
+#define BAR 0x02/* adjacent comment
+                   over 2 lines */
+
+

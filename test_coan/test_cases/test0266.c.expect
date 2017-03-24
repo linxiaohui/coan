@@ -1,0 +1,10 @@
+/**ARGS: source -DX=1 -DY=32 */
+/**SYSCODE: = 16 | 2 | 1 */
+KEEP ME
+KEEP ME
+KEEP ME
+#if 1 << -2
+KEEP ME
+#endif
+KEEP ME
+

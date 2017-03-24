@@ -1,0 +1,5 @@
+AND: global: expands afresh as >>And<<: in options
+BAR: global: expands afresh as >>3<<: evaluates to 3: in options
+FOO: global: expands afresh as >>(1+1)<<: evaluates to 2: in options
+SYM: global: expands afresh as >>((1+1) And ((1+1) And 3) And 3)<<: in options
+SYM: global: expands unchanged as >>((1+1) And ((1+1) And 3) And 3)<<

@@ -1,0 +1,12 @@
+Expanding "type_comb2(T1,T2)" at {CWD}/test_cases/test0411.c(3)
+Edit #001: >>__typeof__(0 ? (T1)0 : (T2)0)<<
+type_comb2(T1,T2): transient: def. >>type_comb2(T1,T2)=__typeof__(0 ? (T1)0 : (T2)0)<<: expands afresh as >>__typeof__(0 ? (T1)0 : (T2)0)<<: {CWD}/test_cases/test0411.c(3)
+Expanding "type_comb2(T1,type_comb2(T2,T3))" at {CWD}/test_cases/test0411.c(4)
+Edit #001: >>type_comb2(T1,__typeof__(0 ? (T2)0 : (T3)0))<<
+Edit #002: >>__typeof__(0 ? (T1)0 : (__typeof__(0 ? (T2)0 : (T3)0))0)<<
+type_comb2(T1,type_comb2(T2,T3)): transient: def. >>type_comb2(T1,T2)=__typeof__(0 ? (T1)0 : (T2)0)<<: expands afresh as >>__typeof__(0 ? (T1)0 : (__typeof__(0 ? (T2)0 : (T3)0))0)<<: {CWD}/test_cases/test0411.c(4)
+Expanding "type_comb3(T1,T2,T3)" at {CWD}/test_cases/test0411.c(4)
+Edit #001: >>type_comb2(T1, type_comb2(T2, T3))<<
+Edit #002: >>type_comb2(T1, __typeof__(0 ? (T2)0 : (T3)0))<<
+Edit #003: >>__typeof__(0 ? (T1)0 : (__typeof__(0 ? (T2)0 : (T3)0))0))<<
+type_comb3(T1,T2,T3): transient: def. >>type_comb3(T1,T2,T3)=type_comb2(T1, type_comb2(T2, T3))<<: expands afresh as >>__typeof__(0 ? (T1)0 : (__typeof__(0 ? (T2)0 : (T3)0))0))<<: {CWD}/test_cases/test0411.c(4)

@@ -1,0 +1,1 @@
+#include FOO: symbolic argument, expands as >>BAR<<: {CWD}/test_cases/test0201.c(3)

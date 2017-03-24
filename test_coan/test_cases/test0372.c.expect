@@ -1,0 +1,6 @@
+Expanding "SYM in options
+Edit #001: >>BAR<<
+Edit #002: >>FOO<<
+Edit #003: >>1<<
+SYM: global: def. >>BAR<<: expands afresh as >>1<<: evaluates to 1: in options
+SYM: global: def. >>BAR<<: expands unchanged as >>1<<: evaluates to 1: {CWD}/test_cases/test0372.c(3)

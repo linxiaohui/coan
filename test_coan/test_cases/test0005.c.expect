@@ -1,0 +1,5 @@
+/**ARGS: source -DFOO */
+/**SYSCODE: = 2 */
+=L
+No newline on last
+line of the file

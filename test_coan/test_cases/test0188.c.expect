@@ -1,0 +1,4 @@
+/**ARGS: source -DA -DB */
+/**SYSCODE: = 1 | 2 | 16 | 32 */
+// error : inserted by coan: "#undef A" contradicts -D symbol at {CWD}/test_cases/test0188.c(3)
+// error : inserted by coan: "#undef B" contradicts -D symbol at {CWD}/test_cases/test0188.c(5)

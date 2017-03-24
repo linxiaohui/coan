@@ -1,0 +1,5 @@
+/**ARGS: source  -DX */
+/**SYSCODE: = 16 | 2 | 1 */
+#define CAT2(x,yy) x ## yy
+#define CAT3(x,yy,zzz) CAT2(x,CAT2(yy,zzz)) 
+KEEP_ME

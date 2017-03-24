@@ -1,0 +1,2 @@
+__has_warning("-Wan-island-to-discover"_bar)
+__has_include("foo"_bar)

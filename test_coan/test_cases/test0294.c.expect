@@ -1,0 +1,15 @@
+/**ARGS: source -kb -UDEFINE1 -UDEFINE2 -UDEFINE3 */
+/**SYSCODE: = 1 | 32 */
+
+uint32 var; 
+ 
+
+
+
+
+
+
+void main()
+{
+    return var;
+}

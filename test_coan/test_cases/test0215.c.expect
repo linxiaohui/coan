@@ -1,0 +1,4 @@
+#include <foo.h>: {CWD}/test_cases/test0215.c(7)
+#include <foo.h>: {CWD}/test_cases/test0215.c(8)
+#include "bar.h": {CWD}/test_cases/test0215.c(14)
+#include "bar.h": {CWD}/test_cases/test0215.c(15)

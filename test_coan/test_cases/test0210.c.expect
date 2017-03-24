@@ -1,0 +1,6 @@
+FOO: global: {CWD}/test_cases/test0210.c(3)
+FOO1: unconfigured: {CWD}/test_cases/test0210.c(4)
+FOO2: unconfigured: {CWD}/test_cases/test0210.c(7)
+BAR: global: {CWD}/test_cases/test0210.c(10)
+BAR1: unconfigured: {CWD}/test_cases/test0210.c(11)
+BAR2: unconfigured: {CWD}/test_cases/test0210.c(14)

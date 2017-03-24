@@ -1,0 +1,19 @@
+/**ARGS: source -DFOO=1 */
+/**SYSCODE: = 1 | 2 | 16 | 32 */
+
+#define XXXX(ftbl, rval, func, ...) (ftbl,rval,func,...)
+
+#if XXXX(ftbl,rval,func,arg)
+KEEP_ME PLUS ENDIF
+#endif
+
+#if (XXXX(ftbl,rval,func,arg) + 2) 
+KEEP_ME PLUS ENDIF
+#endif
+
+KEEP_ME
+
+#if  XXXX(ftbl,rval,func,arg)
+KEEP_ME PLUS ENDIF
+#endif
+

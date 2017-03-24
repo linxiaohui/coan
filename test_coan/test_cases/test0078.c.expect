@@ -1,0 +1,7 @@
+/**ARGS: source -DFOO1 -UFOO2 -DBAR1 -UBAR2 */
+/**SYSCODE: = 1 | 16 | 32 */
+#if defined UNKNOWN
+	KEEP ME
+#else
+	KEEP ME
+#endif

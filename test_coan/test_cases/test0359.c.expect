@@ -1,0 +1,9 @@
+/**ARGS: source -UFOO */
+/**SYSCODE: = 32 | 1 */
+
+#if defined(BAR)
+KEEP ME
+#endif
+#if defined(BAR)
+KEEP ME
+#endif

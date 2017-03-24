@@ -1,0 +1,1847 @@
+Symbian v0.1.	Mike Kinghan.
+*	Added getopt.c and getopt.h for Standard C compatibility.
+*	Added implementations for err(), errx(), warnx(), vwarnx() for
+	Standard C compatibility.
+*	New: Added options -v, -h
+*	New: Made usage() much more explanatory.
+*	New: Accept `defined x' as well as `defined (x)' as per C Standard.
+*	New:
+		Handle #defines and #undefs:
+		We will drop a `#define sym' that reiterates a -Dsym.
+		(But we can't drop `#define sym val' even if it
+		reiterates -Dsym=val, because macro substitution may
+		depend on it.)
+		We will drop an `#undef sym' that reiterates a -Usym
+		We will replace `#define sym....' with an #error
+		when it contradicts -Usym or when it is a differing
+		redefinition of -Dsym[=val].
+		We will replace `#undef sym' with an #error when it
+		contradicts -Dsym[=val]
+*	New:
+		Simplify truth-functional #ifs where possible even when
+		they cannot be eliminated on the basis of the -D or -U assumptions,
+*	Opt:
+		Introduce fast comparison op_cmp() in place of frequent calls
+		to strncmp() and strlen() on 1 or 2 byte strings.
+*	Opt:
+		The debug() function tested the debugging flag in every call
+		and did nothing in case false. Replace it with function ptr
+		debug that is initialised -> debug_live() when debugging == true
+		and empty function debug_dummy() when debugging == false.
+*	Opt:
+		Eliminated numerous strlcmp() calls re-testing initial
+		substrings of the same string.
+*	Fix:
+		Line continuations were recognised by skipcomment()
+		but on reading a line continuation it did not extend
+		the line buffer to get the rest of the continued line.
+		So e.g.
+			#define \
+				FOO
+		was construed as an insoluble #if followed by a plain
+		line.
+*	Fix: eval_table() had two early returns with LT_IF in which it failed
+		to update the output argument char **cpp. This could lead
+		to a line being classified LS_DIRTY - not a possible
+		preprocessor line - when it was a valid preprocessor line.
+
+Symbian v0.1.1	Mike Kinghan.
+*	Fix:
+		Shortcircuit evaluation of binary truth functors did not
+		respect operator precedence.
+
+Symbian v0.1.2	Mike Kinghan.
+*	Fix:
+		Shortcircuit evaluation of binary truth functors was
+		broken in attempting to respect operator precedence.
+*	Fix:
+		Shortcircuit evaluation of binary truth functors
+		sometimes failed to propagate the value of shortcircuited
+		subexpression.
+*	Fix:
+		Invalid fall-through in getline() from symbol-not-found case
+		to ignore-symbol case.
+
+Symbian v0.2	Mike Kinghan
+*	New:
+		Substantial new logic to achieve a consistent handling of
+		constants (in the absence of -k), both in cases like #if 1,
+		#if 0, and in cases where constants are truth-functionally
+		combined with non-constant expressions.
+*	Fix:
+		Previous optimisation had broken keywordedit()
+
+Symbian v0.2.1	Mike Kinghan
+*	Fix:
+		#ifs of the  form p && q or p || q with q constant and p
+		and p an insoluble expression where not handled correctly.
+	Note:
+		This version also contains inactive code preparatory to
+		resolving truth-functional tautologies and contradictions
+		in #ifs even where the operands are insoluable expressions.
+
+Symbian v1.0.0	Mike Kinghan
+*	New:
+		Errors diagnosing conflicts between the -U or -D assumptions
+		and #defines or #undefs encountered on input are now reported
+		on stderr, as well as reflected by #error directives on stdout.
+*	Fix:
+		A missing newline at the end of a preprocessor directive at EOF
+		is now reported as a non-fatal error, rather than provoking abort().
+
+Symbian v1.0.0a	Mike Kinghan
+*	Temporary hack version to enable system testing pending better handling
+	for case of:
+		#undef FOO
+		#define FOO
+	Emitted #error directives are made comments for now.
+
+Symbian v1.0.1	Mike Kinghan
+*	Fix:
+		When -DFOO[=STRING] is passed we're now smart enough to treat the
+		input sequence:
+			#undef FOO
+			#define FOO[=STRING]
+		as innocuously redundant. It is deleted, rather than diagnosing
+		a contradiction at #undef FOO.
+Symbian v1.0.2	Mike Kinghan
+*	Fix:
+		When deleting a superfluous bracket, now replace it with a space
+		instead of a '\v' ('\v'es being erased on output). This fixes the
+		bug whereby e.g.
+			# if(FOO == 0)
+		becomes # ifFOO == 0
+Symbian v1.0.3	Mike Kinghan
+*	Fix:
+		v1.0.1 introduces a bug: it is possible for a deferred #error
+		diagnostic if and when it is output to overwrite the next "real"
+		line of pending output, so that the #error is output twice and the
+		real output line not at all. Now fixed.
+	Fix:
+		The fix in 1.0.1 was hastily tied off in respect of stderr output.
+		The innocuous input sequence:
+			#undef FOO
+			#define FOO[=STRING]
+		was deleted on stdout, but on stderr the #undef still provoked
+		an error diagnostic, and the following #define produced another
+		diagnostic to "excuse" the previous one. stderr is aligned with
+		stdout out and made silent for this input sequence
+	Fix:
+		The fix in v1.0.2 is the undesirable side-effect of leaving
+		superfluous	whitespace instead of superfluous brackets. The fix is
+		now refined so that a superfluous bracket is deleted when it is
+		safe to do so and otherwise replaced with a space. "Safe" means
+		the superfluous bracket is flanked by whitespace or another bracket.
+Symbian v1.0.4	Mike Kinghan
+*	New:
+		Simplification will no longer remove redundant parentheses from
+		a directive if it is otherwise unchanged. In the interest of
+		minimising insignificant diffs v. original code lines which are
+		not __materially__ simplified will be left alone.
+
+Symbian v1.0.5	Mike Kinghan
+*	Fix:
+		find_sym() was erroneously reporting a match of name1 with name2 if
+		name1 was an initial substring of name2. Overlooked side-effect of
+		replacing strlcmp() with strncmp().
+	Fix:
+		#define and #undef directives were being processed without prior
+		decision as to whether the current if-state required them to be
+		dropped. Thus e.g. with unifdef -UUNDEFINED -DDEFINED the sequence
+
+			#ifdef UNDEFINED
+			#undef DEFINED
+			#endif
+
+		was provoking a "contradictory #undef" diagnostic.
+Symbian v1.0.6
+*	New:
+		If an EOF-in-comment error is given, the diagnostic now includes the
+		line number at which the unclosed comment begins.
+*	Fix:
+		Debug output fpr #defines and #undefs was garbled.
+Symbian v1.1.0	Mike Kinghan.
+*	New:
+		Handling of quoted strings ("<string>" or '<string>') is
+		implemented. This eliminates broken behaviour when
+		comment-delimiters occur within quoted strings. The implementation
+		is within the function formerly known as "skipcomment()",
+		which is now more suitably called "chew_on()";
+
+		chew_on() treats paired double-quotes and paired single-quotes as
+		equivalent delimiters of text within which it will not parse
+		quotations of the other kind. It leaves the detection of
+		single-quote strings that are illegal character constants
+		to your compiler.
+
+		chew_on() parses '\' as the escape character. A quote character that
+		is preceded by an unescaped	escape is parsed as escaped, i.e. it
+		does not open or close a quotation.
+
+		chew_on() will not parse the start of a comment within quotation, but
+		it will parse quotation	within a comment, and will parse the end of
+		a comment within quotation within a comment. If an open quotation
+		is left dangling when a containing comment closes, the quotation
+		is deemed to be closed. chew_on() gives an error if an unescaped
+		newline occurs within quotation	that is not within a comment.
+
+		Thus chew_on() will never enter a an in-comment state within
+		quotation, but it tolerates all	the following as comments.
+		(As I cannot nest C-comments, '{{' denotes a C-comment opening
+		and '}}' denotes a C-comment closure.)
+
+			// This comment has contains an unclosed "-character.
+			// This comment doesn't but it contains an unclosed single quote.
+			{{ The following comment terminator isn't quoted by the
+				previous apostrophe or by this "-character }}
+
+		Unifdef now gives error if EOF is read within quotation or within
+		a comment. The	diagnostic refers to the line number at which the
+		dangling comment or quotation begins.
+*	New:
+		A new commandline option -x is introduced to control the policy for
+		handling #defines or #undefs that contradict the -D or
+		-U assumptions. 3 policies are provided:
+
+			-xd		A contradictory #define or #undef is just deleted
+			-xc		A diagnostic comment is inserted in place of the
+					contradictory directive
+			-xe		A diagnostic #error directive is inserted in place
+					of the contradictory directive
+
+		A diagnostic is written to stderr whatever the policy
+
+*	New:
+		Experimental code is removed because I have decided it has no future.
+Symbian v1.1.1	Mike Kinghan.
+*	New:
+		The program now provides discriminating return codes. If the return
+		code is negative then unifdef ended abnormally and the input was
+		not completely processed. The abend codes are:
+
+			-1	=	Commandline line usage error.
+			-2	=	Some resource was exhausted, probably memory.
+			-3	=	A system error stopped execution.
+			-4	=	Unifdef bailed out in confusion, due to a logic bug
+
+		If the return code is non-negative then it is a bitmask.
+		If all bits are clear then the input was valid and has been copied
+		to output unchanged.
+		If return code & 1 is clear then the input was valid.
+		If return code & 1 is set then the input was found to be in error.
+		If return code & 2 is set then some input lines were deleted on
+		output.
+		If return code & 4 is set then #defines or #undefs in contradiction
+		of the -Ds and -Uswere deleted on output.
+		If return code & 8 is set then contradictory #defines or #undefs
+		were replaced with diagnostic comments.
+		If return code & 16 is set then contradictory #defines or #undefs
+		were replaced with diagnostic #errors.
+
+		The flagging of contradictions does not entail that the input was
+		in error (return code & 1 may be clear).
+
+		If return code & 32 is set then a parsing error was found
+		(and return code & 1 is set).
+
+		Thus unproblematic return codes are 0 and 2. Return codes that are
+		odd or negative mean the output	is not valid for the CPP.
+
+*	Fix:
+		The policy flags that were supposed to be -xd, -xc and -xe were in
+		fact implemented as -x0, -x1 and -x2 respectively.
+		They are now as intended.
+
+Symbian v1.1.2	Mike Kinghan
+*	Fix:
+		The tool distinguishes the #-line statuses LT_CONSISTENT_DEFINE_KEEP
+		and LT_CONSISTENT_DEFINE_DROP, depending on whether a #define was
+		non-contradictory and non-redundant vis-a-vis -Ds and -Us, or
+		non-contradictory but redundant. But it neglected to make the same
+		necessary distinction for #undefs. They were just distinguished as
+		either contradictory or non-contradictory any non-contradictory
+		was #undef was dropped.
+*	New:
+		The warning "output may be truncated" that was issued for any
+		terminal error was unsatisfactorily vague. A new terminal error
+		message gives the return code and states whether end-of-input was
+		in fact reached.
+*	New:
+		The non-portable unix APIs err(), errx(), warnx() etc. do not well
+		answer our diagnostic needs since we have started to compose
+		provisional	diagnostics for deferred use, so a second family of
+		diagnostic functions was introduced based on vcomplain(). This
+		became messy. All diagnostic functions are now based on vcomplain()
+		and the unix APIs are dispensed with.
+Symbian v1.1.3	Mike Kinghan
+*	Fix:
+		The debug() optimisation of v0.1 introduced a bug that bites if
+		debug() is called before all the commandline arguments were parsed,
+		because the symbol would still be an uninitialised function pointer
+		(NULL). This would occur e.g. if a -D or -U symbol was found to be
+		a duplicate. The function pointer is now initialised to &debug_live.
+*	Fix:
+		A repercussion of parsing quotation is that we now also need to
+		recognise the #error directive as initiating a sort of comment-state
+		within which quotations need not be well-formed. Otherwise an #error
+		directive like:
+
+			#error You can't define FOO and BAR at the same time!
+
+		is faulted for newline within '...
+
+		A new chew_on()-state called ERROR_COMMENT is introduced for this
+		purpose. The ERROR_COMMENT state is like the CXX_COMMENT state
+		except that it is terminated by the start of a C comment as well
+		as by a newline.
+*	Fix:
+		Innocuous logic error in chew_on() could cause an unescaped newline
+		within quotation within a comment to be processed twice.
+*	New:
+		Shared use of static scratch buffer for assembling formatted output
+		was too	fragile, and needed a static MAXLINE. Safe dynamic solution
+		substituted.
+Symbian v1.1.4	Mike Kinghan
+*	Fix.
+		Trashed the line-count in 1.1.3 :(
+Symbian v1.1.5	Mike Kinghan
+*	Fix:
+		It was possible for chew_on() to return leaving itself
+		falsely in the escape state.
+	Fix:
+		Recognised that text following
+
+			#define NAME[(arg,...)]
+
+		until an unescaped newline must be parsed in the same way as the
+		text of an #error directive, i.e. as a sort of pseudo-comment that
+		is indefeasibly closed by unescaped newline or by the opening of a
+		true comment. Therefore have renamed the ERROR_COMMENT state
+		introduced in 1.1.3 as PSEUDO_COMMENT and forced the PSEUDO_COMMENT
+		state on the definiens of a #define.
+	Fix:
+		PSEUDO_COMMENT requires the diagnostic for EOF-within-comment to be
+		generalised and that an opening line number for this disgnostic
+		shall be recorded just after every #error and every
+		#define NAME[(arg,...)]. The diagnostic is now:
+
+		"EOF within comment, #error ... or #define ... context \
+			commencing at line <line>"
+
+		A line-continuation sequenence that is inadvertently not escaped
+		can trigger this diagnostic for C++ comments, #errors or #defines.
+	Fix:
+		The strip_newline() function that I used to remove the terminal
+		newline from the end of a line preparatory to quoting it in a
+		diagnostic was the source of a bug when I called it before I had
+		finished parsing the line. strip_newline() is now dispensed with
+		in favour of more recherche but safer sprintf() formatting.
+*	New:
+		Now check for duplicated or contradictory -Ds and -Us while parsing
+		commandline. Complain on duplicate. Bail on contradiction.
+*	New:
+		Complain when we output an #error directive not in #if-scope. This
+		indicates either that our -D and -U assumptions conflict with
+		conditions that the authors of the code wished to assert or else
+		that the code was already going to #error.
+
+		If #error was unconditional on input, say:
+			"An unconditional #error directive was input".
+		If #error has been made unconditional by our assumptions, say:
+			"An unconditional #error directive was output".
+*	New:
+		Now complain of garbage following conditional directives. The
+		common error "#else if..." instead of #elif" gets this diagnostic
+		and is parsed as #else. The legacy behavior for garbage on
+		#-lines silently discarded the current truth-state and instated
+		an unresolved state.
+
+	New:
+		The new diagnostics for unconditional #error directives and
+		garbage after preprocessor directive are not classified as parse
+		errors - they are warning - but would be indistinguishably reported
+		on stderr by the existing diagnostic machinery and not reflected
+		in the return code.
+
+		The return codes and diagnostics are now rationalised on a
+		severity/reason-code model. Every diagnostic has a distinct reason
+		code that also encodes a severity. 4 severities are now assigned..
+
+		The severity of a reason code R is R & 0x1ff.
+
+		A small number of reason codes are __summary__ reason codes,
+		i.e. they belong to summary diagnostics that are written to
+		stderr at termination. 4 summary reason codes are now assigned.
+
+		All return codes are now non-negative and the return code is always
+		a bitmask of severities and summary reason codes.
+
+		The return code encodes each distinct severity and each distinct
+		summary reason code that has accrued in the course of execution.
+		A return code RC can be interpreted as follows:
+
+		RC = 0:			SEVERITY_NONE
+						Execution ended with 0 diagnostics.
+						Good end of input reached.
+
+		RC & 0x200:		SEVERITY_INFO
+						Execution ended with at worst informational
+						diagnostics.
+						Good EOF reached.
+
+		RC & 0x400:		SEVERITY_WARNING
+						Execution ended with at worst warnings.
+						Good EOF reached.
+
+		RC & 0x800:		SEVERITY_ERROR
+						Execution ended with at worst errors.
+						Good EOF not reached.
+						(Errors may be diagnosed in the commandline
+						arguments or in parsing input).
+
+		RC & 0x1000:	SEVERITY_ABEND
+						Execution was aborted by an environment or internal
+						error, including unavailability of resource.
+						Good EOF not reached..
+						(Inability to open an input file is classified as an
+						abend, though it may in fact result from user error).
+
+		RC & 0x201:		SUMMARY_DROPPED_LINES (INFO)
+						Input lines were dropped on output
+
+		RC & 0x202:		SUMMARY_CHANGED_LINES (INFO)
+						Input lines were changed on output
+
+		RC & 0x404:		SUMMARY_ERRORED_LINES (WARNING)
+						Input lines were changed to #errors on output,
+						because	they contradicted the -Ds or -Us.
+
+		RC & 0x408:		SUMMARY_ERROR_OUPUT (WARNING)
+						An unconditional #error was output.
+
+		Every diagnostic written on stderr includes its reason code.
+		The severity of the reason code is expressed in the diagnostic
+		with the appropriate format chosen from:
+
+			"info <reason>:"
+			"warning <reason>:"
+			"error <reason>:"
+			"abend <reason>:"
+
+		Reason codes are in ascending order by severity,
+		i.e info < warning < error < abend.
+
+Symbian v1.1.6	Mike Kinghan
+*	Fix:
+		Typo in severities enum caused contention for 1 bit flag
+		in the return code. Caused exit summary to claim errors when
+		there had only been info diagnostics
+*	Fix:
+		Corrected some errors and ommissions in usage help.
+
+*	New:
+		New commandline option -m controls verbosity. (Has no
+		effect on the information in the return code.)
+
+			-m{info|warning|error|abort}
+
+		suppresses all diagnostics no worse than the specified
+		severity.
+
+			-msummary
+
+		suppresses summary diagnostics at exit.
+
+			-m0xXXXX
+
+		suppresses all diagnostics with codes matching all bits
+		in 0xXXXX
+
+			-mverbose
+
+		Output all diagnostics.
+
+		If no -m specified default is -minfo -msummary (outputs
+		warnings and worse, no exit summary).
+*
+	New:
+		For readability, diagnostics now prefixed just with
+		unqualified filename of executable rather than full path.
+
+*	New:
+		Exit message shorter and clearer: Either:
+			"Completed [{at|before} EOF with \
+				{remarks|warnings|errors}], exit code 0xXXXX"
+		or
+			"Aborted, exit code 0xXXX"
+*	New:
+		Diagnostics now refer to "foo.cpp: line nnnn:"
+		rather than "foo.cpp: nnnn:"
+Symbian v1.1.7	Mike Kinghan
+*	Fix:
+		The "Abort..." exit diagnostic lacked an argument, would
+		use random memory.
+*	Fix:
+		The structure of the return code causes information to
+		be lost on environments that truncate process return codes
+		to unsigned char. (Doh!) The structure is therefore revised.
+		The severity bits are shifted into the low-order four bits
+		and the summary reason codes are shifted into bits immediately
+		higher. The 5th-9th bits were idle in the old rc.
+
+		Isomorphism is lost between the reason codes as given in
+		diagnostics and the return code, but this is trivial.
+
+		With this arrangement all the severity bits will be returned in
+		an unsigned char to the environment, and so will all 4 summary
+		bits that are currently assigned.
+
+		Thus a return code is now interpreted:
+
+		RC = 0:			SEVERITY_NONE
+
+		RC & 0x1:		SEVERITY_INFO
+
+		RC & 0x2:		SEVERITY_WARNING
+
+		RC & 0x4:		SEVERITY_ERROR
+
+		RC & 0x8:		SEVERITY_ABEND
+
+		RC & 0x11:		SUMMARY_DROPPED_LINES (INFO)
+
+		RC & 0x21:		SUMMARY_CHANGED_LINES (INFO)
+
+		RC & 0x42:		SUMMARY_ERRORED_LINES (WARNING)
+
+		RC & 0x82:		SUMMARY_ERROR_OUPUT (WARNING)
+
+Symbian v1.1.8	Mike Kinghan
+*	Fix:
+		Serious bug caused evaluation of ...op...op... expressions or
+		for op = && or op = || to stop at the first occurrence.
+*	Fix:
+		Shy bug would make it possible for only one of a pair of
+		parentheses to be deleted in simplifying a directive,
+		when the other had no flanking whitespace.
+*	Fix:
+		Clarified usage help for -k option.
+
+*	Fix:
+		v1.1.7 displayed its version as v1.1.6 for unifdef -v
+*	Fix:
+		vbail() failed to record severity in the exit code if no
+		message was passed.
+*	Fix:
+		Superfluous occurrence of word "with" in exit message.
+
+*	Fix:
+		Reason were codes displayed with excess width.
+*	New:
+		The previously non-supressable exit message "Completed..."
+		is now classified as an informational diagnostic, so is
+		suppressed by -minfo or stronger (and so is suppressed by
+		default).
+*	New:
+		New option -fFILE allows options to be read from FILE.
+Symbian v1.2.0	Mike Kinghan
+		(1.1.8 was supposed to be 1.2.0 but I forgot).
+*	Fix:
+		Windows build gave spurious read error on an -f file
+		if the file contained newlines. The check that fread()
+		returned bytes = size of file is invalid on Windows
+		because the read converts CRLFs to LFs. Have relaxed
+		check so that fread returns > 0.
+*	Fix:
+		The sequence
+
+			#undef FOO
+			#define FOO
+
+		has been spared a "contradiction" diagnostic in the
+		presence of -DFOO since 1.0.1. The diagnostic is stored
+		when #undef FOO is seen but discarded if #define FOO
+		turns up next. It was a bug however that the warning bit
+		set in the program return code when the contradiction was
+		provisionally noted was not returned to its prior set/clear
+		status when the diagnostic was discarded. Thus the rc could
+		indicate falsely that warnings had been issued. (Ideally
+		would not set the warning bit until the diagnostic is actually
+		issued but in the implementation that is more complicated
+		than resetting the status quo ante).
+
+*	New:
+		-fFILE option made more flexible - is no longer exclusive
+		of other commandline args:
+
+		Can now occur anywhere in a	commandline and the options
+		read from FILE will be parsed as if they occurred in the
+		commandline at the position of the -f.
+
+		This feature supports drivers that wish to input a constant
+		-f file for each of variable input files. Previously was
+		necessary for such a driver to assemble a fresh -f for
+		each input file so that the input file would be specified
+		in it. The alternative of redirecting stdin from the
+		input file would cause all diagnostics to refer to "[stdin]".
+
+		The -f option may only occur once (so it may not occur
+		in the options read from an -f file).
+
+Symbian v.1.2.1	Mike Kinghan
+*	Fix:
+		Blanks lines output in lieu of deleted lines when -l used
+		were wrongly counted as dropped lines rather than changed lines.
+
+*	Fix:
+		Debugging literal for the PSEUDO_COMMENT state had been
+		left as "#error COMMENT". Changed to "PSEUDO COMMENT"
+*	Fix:
+		If an input #undef was found in conflict with the
+		-Ds and -Us and replaced with a diagnostic comment or #error,
+		the return code would indicate lines dropped and also lines
+		changed. Should only indicate lines changed. The monitoring
+		of lines changed/lines dropped now simplified by just counting
+		these events at the point of occurrence and then working out
+		the final status bits at exit.
+
+sunifdef v0.1.0	Mike Kinghan
+*	New:
+		Tool renamed sunifdef to escape unifdef compatibility.
+		Root & branch modularisation of program.
+*	New:
+		Long options implemented. Library versions of getopt(),
+		getopt_long() were non-retentrant, hampering the implementation
+		of -fFILE. Using our own rentrant getopt_long(). Short
+		option flags are changed to harmonise with the long option
+		names.
+*	New:
+		Increased tolerance for sequences like:
+
+			#undef FOO
+			#define FOO
+
+		when we have -DFOO. We now refrain from complaint if the #undef and
+		the #define are separated, provided there is only whitespace and
+		comments in between. We also tolerate e.g.
+
+			#undef FOO
+			#undef FOO
+			#define FOO
+*	New:
+		Hard-coded limit on line length removed.
+*	New:
+		Hard-coded limit on number of symbols removed.
+*	New:
+		New options:
+			-r | --replace
+			-B | --backup [SUFFIX]
+		support processing of multiple input files.
+
+		--replace replaces each input file with the corresponding
+		output file.
+
+		--backup SUFFIX backs up each input file
+		by appending SUFFIX to input filename.
+
+		--replace changes the function of stdin when no input
+		files are specified. Without --replace stdin will supply the
+		sole input file, as before. With --replace, stdin will supply
+		names of input files.
+*	Fix:
+		Parentheses that ought to be deleted failed to be deleted when
+		they closed at end of line.
+*	Fix:
+		Modularisation compels back off the debug() optimisation
+		of v0.1 because extern function ptr
+		void (*debug)(const char *,...) does not honour variable
+		args.
+
+sunifdef v0.1.1	Mike Kinghan
+*	New:
+		Doxygen comments.
+*	Fix:
+		ptr_vector_insert() failed to extend heap block sufficiently on demand;
+		resulted in writing past end of blocks
+*	Fix:
+		stderr diagnostic was not cleared from heap when --conflict delete in force,
+		hence same diagnostic written repeatedly.
+*	Fix:
+		Spurious parse error given for `--constant eval,del' argument.
+*	Fix:
+		Statically initialised modules not 0-filled in optimised GCC build.
+*	Fix:
+		Comment-state must be set = PSEUDO_COMMENT for #error directive regardless
+		of whether it is to be kept or dropped.
+sunifdef v0.1.2	Mike Kinghan
+*	Fix:
+		The "--constant" option was wrongly written "--constants" in the usage help.
+*	Fix:
+		Evaluation of arithmetic comparison ops was broken.
+sunifdef v0.1.3	Mike Kinghan
+*	Fix:
+		Pointer into line buffer within chew_on() would be invalidated if
+		extend_line() reallocated the buffer.
+*	Fix:
+		--symbols option erroneously insisted on a --define or --undef
+*	Fix:
+		Did not correctly check for --symbols option to pre-empt
+		symbol lookups.
+sunifdef v0.1.4	Mike Kinghan
+*	Fix:
+		DEF0002: memmove() miscalculation could cause seg fault in symbol table lookups.
+		Reported by "Juan LEON Lahoz Garcia" <juanleon1@gmail.com>
+*	Fix:
+		DEF0003: Faulty ordering of insertions into the symbol table could cause lookups to fail
+		erroneously. Reported by "Juan LEON Lahoz Garcia" <juanleon1@gmail.com>
+sunifdef v1.0	Mike Kinghan
+*	New:
+		REW0002: The -i | --ignore option is renamed -p | --podsym to indicate better
+		that option causes lines to be treated as Plain Old data. The -t |
+		--text option is renamed -P | --pod for the same reason.
+*	New:
+		REW0003: The implementation of the --constant policy, though
+		consistent, was not conceptually coherent. Reworked.
+*	New:
+		FEA0006: The -p | --podsym option is honoured for `#if defined' and `#if !defined'
+		directives as well as #ifdef and #ifndef
+*	Fix:
+		DEF0004: Overlooked occurrence of "unifdef" rather than "sunifdef" in
+		diagnostic output.
+*	Fix:
+		DEF0005: The dropped lines count was not incremented for conflicts in
+		the presence of the `--conflict delete' option
+*	Fix:
+		DEF0006: The SUMMARY_ERRORED_LINES status flag (return code & 64)
+		was not set in respect of the `--conflict error' option.
+*	Fix:
+		DEF0007: The `--conflict error' option was not followed through for
+		the case where it causes an unconditional #error to be output
+		(return code & 128).
+*	Fix:
+		DEF0009: printline_cut() was capable of leaving non-printable
+		house-keeping bytes in the tidied up output buffer.
+*	Fix:
+		DEF0010: The --constant policy should apply to constants only in
+		truth-functional contexts but was applied in all contexts. In
+		arithmetic contexts constants should always be treated as
+		integers: the constant policy does not apply.
+*	Fix:
+		DEF0011: Parentheses rendered redundant by simplification
+		were not deleted in all cases where they safely could be.
+sunifdef v1.0.1	Mike Kinghan
+*	Fix:
+		DEF0012: Spit-and-polish to get a clean build with -Wall
+*	Fix:
+		DEF0013: Removed needless redefinition of PATH_MAX from Windows
+		build.
+*	Fix:
+		DEF0014: `make check' always reported success even if the tests reported
+		failures.
+*	New:
+		TST0002: The test driver test_sunifdef is strengthened:
+		- 	To work without relying on system() to return a true exit code from
+			the executed command
+		-	To work without relaying on system() to distinguish output redirectors
+			from the arguments of the command.
+		-	To work in a Wine (Windows on Unix) emulator environment when the
+			input pathnames are not Windified
+		-	To work in a Cygwin (Unix on Windows) emulator environment when the
+			input pathnames are not Windified.
+
+sunifdef v2.0	Mike Kinghan, 2006-06-24
+*	Fix:
+		DEF0015: Truth-functional simplification was broken for
+		constant operands when --constant eval in force.
+*	Fix:
+		DEF0016: Murky evaluation of the PODSYM attribute over && and ||.
+		Rules now are:
+		Where A and B are both evaluated:
+			PODSYM(A && B) <-> PODSYM(A) && PODSYM(B)
+			PODSYM(A || B) <-> PODSYM(A) || PODSYM(B)
+		Where only A is evaluated by short-circuiting:
+			PODSYM(A && B) <-> PODSYM(A)
+			PODSYM(A || B) <-> PODSYM(A)
+*	New:
+		REW0001: Parser substantially simplified and much more powerful.
+		Previously only evaluated truth-functions and relational operators;
+		Could evaluate FOO defined -DFOO=<VAL> where only where VAL was an
+		integer constant. Now can evaluate all C operators except the
+
+		conditional operator; can evaluate FOO provided VAL can be recursively
+		evaluated, but will determine that circularly defined symbol -DFOO=BAR
+		-DBAR=FOO is unresolved rather loop forever.
+sunifdef v2.1.	Mike Kinghan, 2006-06-27
+*	Fix:
+		DEF0001: All usage errors now emit a diagnosis
+*	Fix:
+		DEF0017: --symbols option failed to list FOO when occurring in
+		#ifdef FOO or #ifndef FOO.
+*	Fix:
+		DEF0018: Unnecessary insistence on --replace option to process
+		mutliple files with --symbols option.
+*	Fix:
+		DEF0019: Lingering reference to "--ignore" in usage diagnostic
+		should have been changed to "--podsym".
+*	Fix:
+		DEF0020: The man page is more complete and correct.
+*	New:
+		FEA0001: Enable discarded lines to be output in the form of comments.
+*	New:
+		FEA0002: --symbols option now has arguments `all', `first' and
+		`locate'. `all' causes all occurrences of symbols to be listed.
+		`first' causes only the first occurrence of each symbol to be
+		listed. `locate' causes the file name and line number to be
+		appended to each listed occurrence.
+*	New:
+		RET0001 The --podsym option, formerly the --ignore option, is
+		dropped as not being plausibly worthwhile.
+
+*	New:	FEA0003 New --line option generates #line directives to make
+		CPP line-numbering of output agree with input even of lines are
+		dropped.
+sunifdef v2.1.1	Mike Kinghan, 2006-07-07
+*	Fix:
+		DEF0021:	Evaluation of unparenthesised compound binary
+		truth-functions "...op...op..." lost information of unresolved
+		operands causing incorrect simplifications.
+sunifdef v2.1.2	Mike Kinghan, 2006-07-16
+*	Fix:
+		DEF0022: Fixed warnings for 64-bit build and unused function results.
+*	Fix:
+		DEF0023: Fixed infrinements of C89
+sunidef v3.0 Mike Kinghan 2006-07-28
+*	Fix:
+		DEF0024: Usage gave -gw as default instead of -gi
+*	Fix:
+		DEF0025: The --symbols option could produce spurious warnings of
+		contradictions.
+*	Fix:
+		DEF0026: The length of formatted output messages was unsafely assumed
+		not to exceed 2K. Their length is now limited only by available
+		heap.
+*	Fix:
+		DEF0027: A symbol for which --undef SYM was specified was evaluated
+		as an insoluble expression. This was at odds with the C Standard,
+		which stipulates the preprocessor will evaluate an undefined symbol
+		as 0. The behaviour now agrees with the Standard.
+*	Fix:
+		DEF0028: The state of the chew module was not fully reinitialised
+		at entry to each input files, causing any newline-within-quotation
+		error to be spuriously repeated for subsequent input files.
+*	Fix:
+		DEF0029: An unarranted simplification was applied to any compound truth
+		functional expression containing more than 1 operator where the
+		order of evaluation was determined by prercedence rather than by
+		parentheses.
+*	Fix:
+		REW0003: The inefficiently recursive formatting of output messaages
+		is reworked.
+*	New:
+		REW0004: Source files diagnostic.* to report.* to reflect broader function
+*	New:
+		REW0005: The range of message reason codes is widened from 6 to 7 bits to
+		accommodate additional diagnostics.
+*	New:
+		FEA0009: Unbalanced parentheses in expressions now provoke parse errors rather
+		than merely causing the expression to be unresolved.
+*	New:
+		FEA0010: Every output message now has a reason code.
+*	New:
+		FEA0011: sunifdef is now agnostic between Unix and Windows line-ends.
+*	New:
+		FEA0012: New --recurse option enables recursion into input directories.
+*	New:
+		FEA0013: Progress messages are a new category of messages with a severity
+		lower than informational messages.
+*	New:
+		FEA0014: New --filter option enables input files to be filtered by file extension.
+*	New:
+		FEA0015: New --keepgoing option makes sunifdef continue processing subsequent input
+		files after errors.
+*	New:
+		FEA0016: Hex and octal constants are now recognised in preprocessor directives.
+*	New:
+		RET0002: The --gag 0xXXXX variant of --gag option is withdrawn.
+
+sunidef v3.1 Mike Kinghan 2007-05-06
+*	New:
+		FEA0017: Now can cope with multi-line C-comments embedded within
+		directives.
+*	New:
+		RET0003: The --obfusc option is withdrawn because the contexts
+		formerly classified as obfuscated are now handled in normal
+		parsing.
+*	Fix:
+		DEF0030: -DSYM=VAL or -USYM=VAL arguments when reported by the
+		--verbose option do not include the =VAL part.
+*	Fix:
+		DEF0031: The --constant policy should apply to constants only in
+		truth-functional contexts but was applied in all contexts. In
+		arithmetic contexts constants should always be treated as
+		integers. (Falsely recorded as fixed DEF0010).
+*	Fix:
+		DEF0032: With the --file option the "Building input tree" diagnostic
+		was emitted even without --verbose and could not be suppressed.
+*	Fix:
+		DEF0032: The --line option was not documented either in the man page
+		or in the --help output.
+*	Fix:
+		DEF0033: Return codes expressed all severities 1 level greater than
+		the true level.
+*	Fix:
+		DEF0034: A false verdict of differently redefined symbol
+		would be returned when the definiens of the symbol was
+		not itself a symbol.
+*	Fix:
+		DEF0035: Use of the --line option did not set the SUMMARY_CHANGED_LINES
+		flag in output.
+sunifdef v3.1.1 Mike Kinghan 2007-11-17
+*	Fix:
+		DEF0036: Failed to detect unexpected end of file within an
+		unmatched #if when missing newline at end of file.
+*	Fix:
+		DEF0037: Summary counts of files reached and files abandoned
+		would be short by 1 if a parse error was encountered without
+		the --keepgoing option in force.
+*	Fix:
+		DEF0038: The extension-matching code supporting the --filter
+		option was broken, allowing --filter EXT to match any file
+		whose extension ended in EXT, even if not identical with EXT.
+*	Fix:
+		DEF0039: The current #if-depth and #if-line number were irrelevantly
+		reported on progress messages.
+
+sunifdef v3.1.2 Mike Kinghan 2007-11-19
+*	Fix:
+		DEF0040: Defective filename matching could lead to a file being
+		mistaken for a directory when building the input file tree, if
+		a directory name was an initial substring of a filename at the
+		same level.
+sunifdef v3.1.3 Mike Kinghan 2008-01-19
+*	Fix:
+		DEF0041: When -DSYM=VAL is specified with VAL a hex integer
+		constant, rather than a decimal constant, sunifdef would
+		fail to resolve SYM in expressions unless the --constant eval was
+		specified, which should be unnecessary. The anomaly ocurred
+		because eval_symbol() anticipated constant values only as
+		decimal constants and, upon encountering a hex-prefix "0x" or
+		"OX" would attempt to parse the token as an expression, invoking
+		eval_table() and ultimately eval_unary(). The latter function
+		_would_ resolve a hex constant, but only if --constant eval is
+		in effect, since the function is assumed to operate on source
+		text rather than on the definiens of -DSYM=VAL. The fix
+		consists in recognising hex constants as such in eval_symbol().
+*	Fix:
+		DEF0042: When -DSYM=VAL is specified with VAL a soluble
+		expression containing at least one integer constant operand,
+		sunifdef would fail to resolve SYM in expressions unless
+		--constant eval was specified. The reason is the same as in
+		bug DEF0041. The fix consists in recording the origin of the
+		text upon which eval_unary() is called - source text or else
+		the definiens of a --defined symbol - and always resolving
+		integer contstants in the latter case.
+*	Fix:
+		DEF0043: sunifdef did not distinguish octal numerals as integer
+		constants and evaluated them as decimal numerals.
+*	Fix:
+		DEF0044: sunifdef did not recognise the suffixes u/U, l/L as
+		belonging to integer constants. These suffixes are now
+		recognised; however, sunifdef still evaluates all integer
+		constants as ints and performs signed integer arithmetic upon
+		them. This is unfixed bug.
+*	Fix:
+		DEF0045: sunifdef did not detect integer overflow in evaluating
+		constants. Now detects overflow whenever the value of a constant
+		will exceed INT_MAX and leaves the constant unresolved with
+		a warning to that effect.
+*	Fix:
+		DEF0046: The --help message contained an occurrence of '--constants'
+		that ought to have been '--constant'.
+
+coan v4.0  Mike Kinghan 2008-03-03
+*	New:
+		The tool is relaunched & rebranded as "coan", a configuration
+		analyser for C/C++.
+*	Fix:
+		DEF0047: If a commandline option of the form -DSYM=VAL is given
+		sunifdef should recognise:
+			#define FOO <text>
+		as equivalent to the commandline option if <text> equates to VAL
+		when embedded comments are stripped out, but failed to do so,
+		falsely diagnosing a differing redefintion of FOO.
+*	Fix:
+		DEF0048: A string could be erroneously identified as a symbol
+		although not beginning with an alphabetic character or underscore.
+
+*	Fix:
+		DEF0049: The state of the #if-control module was re-initialised
+		too late on reaching a new input file and was not re-initialised
+		at all on entering or leaving a new directory. Consequently the
+		progress messages emitted on reaching a new file or on entering or
+		leaving a directory	would have a spurious trailer like
+		"(#if line 44 depth 1)" falling through from the processing of the
+		previous input file if that	processing had ended with an parse error.
+
+*	Fix:
+		DEF0050: A missing newline at end of file was diagnosed as an
+		error if encountered while processing a directive but otherwise
+		not diagnosed at all. This was illogical as in either case the
+		event indicates that the file may have been truncated, and in
+		either case it merits only a warning if nothing else is wrong.
+		The event is now always diagnosed as a warning.
+*   Fix:
+        DEF0051: A file extension EXT given to the --filter option would be matched
+        by any file whose extension had EXT as a terminal segment.
+*   Fix:
+        DEF0052: Source code containing an escaped double-quote, e.g:
+            char ch == '\"';
+        would cause a spurious "stray \" warning.
+
+*	New:
+		FEA0018: The commandline interface now supports a range of operating
+		modes or "commands". The command is selected by the the first
+		option on the commandline, which is a keyword without a '-' or '--'
+		prefix. This new regime avoids a proliferation of cases in
+		which options associated with one modality are meaningless or
+		incompatible with another modality but may still be intermixed.
+
+*	New:
+		FEA0019: The former default mode of operation (editing the
+		input source to output as implied by the specified configuration)
+		is now one the several operating modes and is selected by the
+		'source' command. The 'source' command has the options:
+        -r, --replace
+                Overwrite input file with output file. Implied by --recurse
+                With -r, stdin supplies the input *filenames*.
+                Otherwise stdin supplies an input *file*; the output file is stdout.
+        -BSUFFIX, --backup SUFFIX
+                Backup each input file by appending SUFFIX to the name.
+                Applies only with -r.
+        -kd, --discard drop
+                Drop discarded lines from output.
+        -kb, --discard blank
+                Blank discarded lines on output.
+        -kc, --discard comment
+                Comment out discarded lines on output.
+        -xd, --conflict delete
+                Delete #defines and #undefs that contradict -D or -U options.
+        -xc, --conflict comment
+                Insert diagnostic comments on contradictions as per -xd. (Default.)
+        -xe, --conflict error
+                Insert diagnostic #errors on contradictions as per -xd.
+        --line
+                Generate #line directives to make CPP line-numbering of output agree with input
+				even of lines are dropped.
+        -c, --complement
+                Complement. Retain the lines that ought to be dropped and vice versa.
+                (Retained #-directives will still be simplified where possible.)
+
+*	New:
+		FEA0020: The former '--symbols' option has been promoted to the
+		'symbols' command. The 'symbols' command supports the options:
+        -i, --ifs
+                List symbols that occur #if[[n]def]/#elif directives.
+        -d, --defs
+                List symbols that occur in #define directives.
+        -u, --undefs
+                List symbols that occur in #undef directives.
+        (Default: -i -d -u)
+        -o, --once
+                List only the first occurrence of each symbol. (Default: List all occurrences.)
+        -A, --active
+                List only symbols from operative directives
+        -I, --inactive
+                List only symbols from inoperative directives
+        -L, --locate
+                Report the source file and line number of each listed occurrence.
+        -e, --eval
+                Report the resolved value of each symbol.
+
+*	New:
+		FEA0021: The 'includes' command is provided for reporting
+		occurrences of '#include' directives. The command has the options:
+        -s, --system
+                List system headers, i.e. <header.h>
+        -L, --local
+                List local headers, i.e. "header.h"
+        (Default: -s -L)
+        -o, --once
+                List only the first occurrence of each header. (Default: List all occurrences.)
+        -A --active
+                List only headers from operative directives.
+        -I --inactive
+                List only headers from inoperative directives.
+        -L, --locate
+                Report the source file and line number of each listed occurrence.
+
+*	New:
+		FEA0022: The 'defs' command is provided for reporting
+		occurrences of '#define' and '#undef' directives. The command has
+		the options:
+        -o, --once
+                List only the first occurrence of each distinct #define or #undef directive
+				(Default: List all occurrences.)
+        -A --active
+                List only operative #define and #undef directives.
+        -I --inactive
+                List only inoperative #define and #undef directives.
+        -L, --locate
+                Report the source file and line number of each listed occurrence.
+
+*	New:
+		FEA0023: The 'pragmas' command is provided for reporting
+		occurrences of the '#pragma' directive. The command has the same options
+		as 'defs'.
+
+*	New:
+		FEA0024: The 'errors' command is provided for reporting
+		occurrences of the '#error' directive. The command has the same options
+		as 'defs'.
+
+*	New:
+		FEA0025: The 'directives' command is provided for reporting
+		occurrences of any directives. The 'directives'	command accepts any of
+		the options of 'includes', 'defs', 'pragmas' and 'errors' commands and
+		combines their effects.
+
+coan v4.0.1  Mike Kinghan 2010-01-18
+*	Fix:
+		DEF0052: A preprocessor directive found at end-of-file with a missing newline caused
+		coan to abend confused.
+
+*	Fix:
+		DEF0053: When a configured symbol that is defined as some unconfigured symbol appears
+		in an expression coan concludes that the expression is illegal after the configured
+		symbol is parsed and issues a spurious diagnostic, which may be a warning or error
+		depending on the context. Coan ought to find that the expression is simply insoluble,
+		if it is in fact legal.   
+ 
+*	Fix:
+		DEF0054: The implementation of preprocessor arithmetic was slapdash. All integer values
+		were construed as int or else too-big. 'U'/'u' and 'L'/'l' integer type-suffixes were
+		parsed but ignored. The implementation now correctly construes and calculates with values
+		of all the C integral types from char through unsigned long long. The integer promotions
+		and the usual arithmetic conversions are applied.
+
+*	Fix:
+		DEF0055: Regression. Coan seg-faulted if the same symbol was -D-ed or -U-ed more than
+		once on the commandline. 
+
+*	Fix:
+		DEF0056: A symbol used as an argument to the #include directive (which is legal when
+		the symbol resolves as a header file name) would not be detected by the symbols command.
+
+*	Fix:
+		DEF0057: The man page incorrectly prescribed -l as a short form of the --line option.
+		There is no short form.
+
+*	Fix:
+		DEF0058: `make distcheck' was broken due to use of the obselete environment variable
+		SUNIFDEF_PKGDIR where COAN_PKGDIR should have been used. 
+
+*	New:
+		REW0006: Coan would erase obfuscatory line-continuations embedded within identifiers simply
+		for	convenience	of parsing. It now preserves them.
+
+*	New:
+		REW0007: The already swollen evaluator module became further bloated with the addition
+		of support for evaluating character constants. Two new modules have been detached from it:
+		the integer_ops module, which deals with evaluation of integer operations, and the
+		integer_constant module, which deals with evaluation of integer constants, including
+		character constants.
+
+*	New:
+		REW0008: A new module has been introduced, the lexicon module, to centralise the
+		recognition of preprocessor keywords and operators. 
+
+*	New:
+		FEA0027: Character constants are now parsed as integer values. Multi-byte utf8 character
+		constants and character constants expressed as escaped hex or octal codes, as well as
+		ascii characters, are correctly evaluated.
+
+coan v4.1  Mike Kinghan 2010-03-31
+
+
+*	Fix:
+		DEF0059: cpp syntax error diagnostics may contain garbage. When a cpp syntax error is
+		diagnosed in an #if expression that has already been subject to some simplification,
+		the diagnostic message displayed garbage instead of the offending content, because
+		the line-buffer printed at this point contains non-ascii simplification codes.
+
+*	Fix:
+		DEF0060: If coan is given 2 or more fully qualified filenames as input that do not
+		share a common root directory then it will construct a garbage input file tree and
+		fail, e.g. coan CMD [OPTIONS] /usr/include/errno.h /home/chevillot/test.h.
+
+*	Fix:
+		DEF0061: If source contains the character constant '\'' coan emits a bogus "stray '\'"
+		warning.
+
+*	Fix:
+		DEF0062: A severe regression on v3.x: the source command stripped #include directives from
+		output.
+
+*	Fix:
+		TST0004: Some case-test commandlines relied on unix/linux shell syntax and did not run on
+		Windows. All case-tests now run on Windows.
+
+*	Fix:
+		TST0005: The test harness relied non-portably on Linux-like output of `uname -m` to 
+		determine host wordsize for *nix hosts and prescribed 32 bit for Windows hosts. Now
+		wordsize is portably determined for all hosts.
+
+*	Fix:
+		REW0005: v4.0.1 introduced a restrictive dependency on header <linux/limits.h> for
+		non-Windows builds.	This was unnecessary and use of <limits.h> has been reinstated.  
+
+*	Fix:
+		RET0004: Withdraw the --constant {unk|eval[,del]} option and replace it a -e, --evalconsts
+		option with the effect that constants occurring as truth-functional operands will be
+		evaluated and eliminated, while by default they are not. Replace the existing --eval option
+		with --evalsyms so that it will not be parsed as a short match to --evalconsts. 
+
+		This amounts roughly to re-instating Unifdef's handling of constants, with --evalconsts
+		equating to	Unifdef's -k
+
+		The eval sub-option when not accompanied by del causes constants occurring as
+		truth-functional operands to be evaluated for the purpose of simplifying the expression
+		but not eliminated. With del, they are evaluated and eliminated. The motivation for this
+		distinction was that eval alone would permit truth-functions to be simplified with respect
+		to their non-constant operands while solitary uses of constants such as #if 0 and #if 1 to
+		enable or disable work-in-progress	tracts of code could be retained, along with the
+		controlled tracts of code. The default behaviour (--constant unk), which is to treat
+		constants in truth-functional contexts like unconfigured symbols, preserves work-in-progress
+		blocks but prohibits simplifications of truth-functions with a constant operand. However
+		the only truth-functional simplifications that are achieved by eval alone are either
+		unintuitive or intutively negligible. E.g. #if 1 || defined(DEFINED_SYM) is simplified to
+		#if 1,	rather than resolved TRUE as we would prefer - which it would be if --constant eval
+		was not	specified at all while in that case the default behaviour would still preserve
+		#if 1. On the other	hand, #if 1 || defined(UNKNOWN_SYM) is likewise simplied to #if 1 as we
+		would like, whereas the	default behaviour would leave it unchanged; but the likelihood of
+		such a directive is vanishingly small.
+
+		The two obvious policies for handling constsnt are evaluate and eliminate them, or don't;
+		to the user the threefold distinction is both obscure and unimportant.
+
+*	New:
+		FEA0026: Allow a configuration to undefine all symbols that are not defined.
+		The -m, --implicit option for all commands implicitly --undef-s any symbol that is not
+		--define-ed. The option enables the user to express the blanket assumption that a symbol
+		is undefined unless it is explicitly defined.
+
+coan v4.2  Mike Kinghan 2010-12-16
+
+*	Fix:
+		DEF0063: When the `--discard comment' option is in effect for the source command, discarded
+		lines should be commented out by prefixing `//coan <'. If a block of lines to be discarded
+		consists of	a multi-line C-comment, then only the first of them is commented in that style
+		and the remainder are output unchanged as illegal text.
+
+*	Fix:
+		DEF0064: When a line-continuation occurs within single-quotation, 2 bytes should be
+		discounted from the	length of the quotation, i.e. 1 for the line-continuation character
+		and 1 for the following newline, but only 1 byte was deducted, causing parse errors in
+		these contexts.
+
+*	Fix:
+		DEF0065: Parsing a string opened by double-quotes should terminate if a non-escaped newline
+		is encountered but did not.
+
+*	Fix:
+		DEF0066: Parsing macro-arguments failed to detect the end in the simple case "(arg)",
+		causing parse errors.
+
+*	Fix:
+		DEF0067: Any call to the previously unused function symbol_undefine() would seg fault when
+		it in turn called eval_result_set_value(sym,0). The 2nd argument of eval_result_set_value()
+		must be a non-null pointer to an int_spec_t.
+
+*	Fix:
+		DEF0068: The macro ptr_set_count() returned garbage due to invalidly casting ptr_set_h to
+		ptr_vector_h. Now implemented as a function.
+
+*	Fix:
+		DEF0069: Dynamically adjust configuration to input source. Allow #define and #undef
+		directives encountered in a translation unit to be treated as transient --define and 
+		--undef options for the course of that translation unit. In the absence of this capability
+		the resolution of directives that involve symbols that have been define-ed or undef-ed
+		earlier in a translation unit may be false with respect to the C preprocessor.
+
+*	Fix:
+		DEF0070: The `--discard blank' option of the source command ought to ensure that the number
+		of source lines output equals the number input, but the implementation failed to emit blank
+		lines to compensate	for lines lost through simplification of directives, as distinct from
+		lines simply dropped.
+
+*	Fix:
+		DEF0071: When the `--discard comment' option of the source command is given, an #if-block
+		that is to be commented out will be output as garbage if the controlling #if condition has
+		been simplified. 
+
+*	Fix:
+		DEF0072: Coan did not complain if an #if/#elif directive had no argument, simply evaluating
+		the directive as insoluble.
+
+*	Fix:
+		DEF0073: Coan's return codes inappropriately encoded the "lines dropped" summary for
+		commands other than `source'.
+
+*	Fix:
+		DEF0074: `make distcheck' was broken in the man target by some autotools upgrade since 4.1.
+		Requires commands for the rule:
+
+		coan.1: man_pod.pl
+
+		to refer to man_pod.pl as $< rather than as `man_pod.pl'.  
+
+*	Fix:
+		DEF0075: `distclean' on the man target did not have `clean' as a prequisite, causing the
+		built man files to remain after distclean.
+
+*	Fix:
+		DEF0076: Corrected typos referring to coan (formerly sunifdef) as "sunidef" in the
+		test scripts' help output. 
+			
+*	Fix:
+		REW0011: Eliminate all of the line-types LT_CONSISTENT_DEFINE_KEEP,
+		LT_CONSISTENT_DEFINE_DROP,	LT_CONTRADICTORY_DEFINE, LT_DIFFERING_DEFINE,
+		LT_CONSISTENT_UNDEF_KEEP, LT_CONSISTENT_UNDEF_DROP,	LT_CONTRADICTORY_UNDEF,
+		LT_INCLUDE_KEEP, LT_INCLUDE_DROP for which if-control has no handlers together with the
+		Categorical module's independant handler for these types. Reduce them all to 2 line-types,
+		LT_DIRECTIVE_DROP and LT_DIRECTIVE_KEEP which get handled en passant upstream of if-control.
+
+		The Categorical module's surviving functions will pertain solely to handling condictions
+		between	commandline -D or -U options and in-source #define or #undef directives. Accordingly
+		rename the module 'Contradiction'.
+
+*	Fix:
+		REW0012: Simplify the tortuous implementation for evaluating #include directives and
+		diagnosing errors therein while accomodating the possibility that the argument of the
+		directive can be a defined symbol. 
+
+*	Fix:
+		REW0013: Simplify the tortuous recursive implementation for obtaining the most-resolved form
+		of a symbol. Just exhaustively expand the symbol's definition and then replace each
+		maximally large expression in that expansion with its integer value.
+
+*	Fix:
+		REW0014: Absorb all responsibilities for setting or resetting the defined/undefined status
+		of a symbol and diagnosing related errors into a new function, symbol_evaluate_status(),
+		eliminating the present diaspora of these responsibilities.
+
+*	Fix:
+		REW0015: The most-resolved form of a symbol that has a circular definition is reported as
+		"insoluble" and no longer a partial resolution of the symbol's definition.
+
+*	New:
+		REW0016: The coan man page is now built compressed, i.e. coan.1.gz instead of coan.1, as
+		required by packaging rules for most distros.
+
+*	New:
+		TST0006: Scripts wine_cast_tester.sh, wine_bulk_tester.sh, wine_symbol_rewind_tester.sh
+		have been added to test_coan to enable running respectively of coan_case_tester.pl,
+		coan_bulk_tester.pl, coan_symbol_rewind_tester.pl against mingw32 builds under wine. 
+		
+*	New:
+		FEA0026: Simplification of directives should preserve parentheses for readability where the
+		meaning will otherwise depend on operator precedence.
+
+coan v4.2.1  Mike Kinghan 2010-12-18
+
+*	Fix:
+		DEF0077: The implementation of FEA0026 causes a regression. A newline can be swallowed at
+		the end of simplified directive, concatenating it with the following line and yielding
+		uncompilable code.
+
+*	Fix:
+		DEF0078: The number of backup files left by the test script coan_symbol_rewind_tester.pl
+		would increase forever unless manually deleted.
+
+*	Fix:
+		DEF0079: The Doxygen configuration continued to give a version number of 4.1 for 4.2
+
+coan v4.2.2  Mike Kinghan 2010-12-20
+
+	Fix:
+		DEF0080: The fix for DEF0077 is inadequate and swallowed newlines can still result from
+		simplification of #if-diectives. The defective function print_line_cut() is now rewritten
+		robustly from scratch.
+
+	Fix:
+		DEF0081: Coan seg faults when a command is issued that will read input from stdin and then
+		CTRL-D is hit, e.g.	'$ coan source -DFOO'. This bug has been lurking for years. Is caused
+		by not reckoning with EOF at start of file	when checking for newline at at EOF.
+
+	Fix:
+		DEF0082: Coan seg faults when a command is issued to read input redirected from /dev/null,
+		e.g. '$ coan source -D FOO < /dev/null'. Same cause as DEF0081.
+
+	Fix:
+		DEF0083: The 3rd of the tests executed by coan_bulk_tester.pl in 'make check' provoked an
+		"Argument list too long" error from within a perl system() call on all Linux hosts and
+		Mac OS. The complaint concerns the commandline of the test itself which  (for no compelling
+		reason) had grown to > 70K. It is emitted from the perl system() call when it delegates
+		to /bin/sh. Oddly, the error only appears when the script is run by 'make check' and
+		not when it is run directly. The length of the commandline is now capped at 64K.
+
+	Fix:
+		DEF0084: No Doxygen documentation was generated for the header file integer_ops.h.
+
+coan v4.2.3  Mike Kinghan 2011-04-26
+
+	New:
+		FEA0027: A 64-bit build for Windows is now supported.
+
+	Fix:
+		DEF0085: Coan failed to swallow the complete argument-list of a the macro call due
+		to fumbling macro arguments that contain operators. Then attempted to parse on from a
+		position inside the macro call causing a spurious error.
+
+	Fix:
+		DEF0086: Symbols that are #define-ed or #undef-ed in-source were added to the configured
+		symbols table for the current file in cases when they should not. They were added if the
+		directives containing them are not going to be dropped. They should be added only if the
+		directives containing them are not going to be dropped and are not in the scope of an
+		insoluble conditional directive.
+		
+	Fix:
+		DEF0087: asserts() have been added to several source files that are followed by
+		declarations within the same scope. Standard C forbids declarations following
+		statements in the same scope. Visual C++ barfs on these errors.
+
+	Fix:
+		DEF0088: Visual C++ (correctly) gives unresolved symbol errors for the get_options
+		symbols optind, optopt and optarg, which were declared extern but not elsewhere
+		defined. Now defined in get_otpions.c
+		
+	Fix: 
+		DEF0089: Fixed various possible-data-loss warnings in arithmetic for 64-bit build.
+
+	Fix:
+		DEF0090: mingw32 gcc 4.4.1 on windows does not recognize the "ll" printf format
+		for long long ints, breaking the build. "I64" format now used on condition that
+		GNUWIN is defined.
+
+	Fix:
+		DEF0091: The test script coan_symbol_rewind_tester.pl fails to run on Windows
+		(rather than Wine) because it does not take options to indicate a Windows
+		environment.
+		
+	Fix:
+		DOC0002: The README file in coan/test_coan was out of date and garbled.
+
+coan v4.2.4  Mike Kinghan 2011-06-29
+
+	Fix:
+		DEF0092: The --evalsyms option of the symbols command is discharged too late when a symbol
+		FOO that is not configured by the commandline is encountered in an in-source 
+		#define FOO [definition] or #undef FOO that is eligible for reporting. In this case the
+		symbol is transiently added to the defined/undefined symbols table for the course of the
+		file and the symbol should be evaluated for --evalsyms *after* that has been done,
+		but it is evaluated beforehand. This bug means that FOO will be reported for --evalsyms as
+		insoluble, whereas it should be resolved to the value it assumes from the directive.  
+
+	Fix:
+		DEF0093: Defective code composes the diagnostic that complains of -D option contradicting a
+		prior -U option and will seg fault if executed.
+
+	Fix:	
+		DEF0094: coan fails to diagnose the commandline usage error of e.g. -DFOO -UFOO
+
+	Fix:
+		DEF0095: If an input file is broken symbolic link it is misidentified as a directory.
+		If --recurse if not specified if is reported as an ignored directory. If --recurse is
+		specified a segfault ensues.
+		
+coan v5.0 Mike Kinghan 2011-12-21
+
+	Fix:
+		DEF0096: Coan will parse without comment and evaluate either of:
+		1) A boolean disjunction whose first operand is true and whose second
+			operand is garbage - evaluated as true.
+		2) A boolean conjunction whose first operand is false and whose second
+			operand is garbage - evaluated as false. E.g.
+
+		#if (TRUE_VAL || *!Nonsense%@)
+		// Keep this code ...
+		#endif
+		#if !(FALSE_VAL && *!Nonsense%@)
+		// Keep this code...
+		#endif
+
+		This occurs because short-cirtcuiting the operator is applied too soon,
+		when the operation is identified and its first operand evaluated. Both
+		operands should be parsed and short-circuiting deferred until the
+		operation is applied.
+
+		This bug has existed in every version.
+		
+	Fix:
+		DEF0097: Coan will mis-diagnose a missing right parenthesis in
+		certain cases when the entire argument of an #if is enclosed in
+		pathentheses, e.g. the legal code:
+		
+		#define LOCAL_MACRO
+		#undef UNDEF_LOCAL_MACRO
+		#if (defined (LOCAL_MACRO) && !defined (UNDEF_LOCAL_MACRO))
+		does_coan_keep_this_1();
+		#endif
+
+		produces the error:
+		
+		line 3: error 0x043b0: Missing ")" in \
+		"#if (defined (LOCAL_MACRO) && !defined (UNDEF_LOCAL_MACRO))"
+		
+		This occurs because the recursive xpression parser's logic for deleting
+		redundant parentheses is faulty: it assumes a) that parentheses are
+		always to be sought for deletion around an expression that, when
+		simplified, contains no binary operator, and b) that the outermost
+		parentheses in any such expression must surround it. But both (a) and
+		(b) are false in the case of defined(NAME) expressions, among others,
+		which contain no binary operator before or after simplification,
+		and contain outermost parentheses which do not surround the expression.
+
+		Parentheses are eligible for deletion when they actually become
+		redundant as a result of eliminating an operand of a binary expression.
+		In these cases the redundant parentheses *will* surround the simplified
+		expression, and only in these cases will coan reliably determine the
+		positions of the parentheses to delete.
+
+		Coan erroneously attempts to delete redundant parentheses, which do not
+		exist, from around the defined(NAME) operands in the conjunction above,
+		and	since the limits of the operands are not reliably determined in this
+		setting, the "outermost" parentheses of the operands are detected and
+		deleted at the positions marked ^ here:
+
+		(defined ^LOCAL_MACRO^ && !defined ^UNDEF_LOCAL_MACRO)^
+
+		- leaving the rightmost parenthesis of the whole expression unmatched
+		whenthe parser looks for it next.
+
+		The fix is to avoid attempting to delete redundant parentheses when it
+		is not actually warranted.
+		
+	Fix:
+		DEF0098: Misevaluation of unary minus on unsigned integer constants,
+		Sourceforge bug #3440713. The application of unary minus to an unsigned
+		integer constant, e.g. -2U, is incorrectly evaluated as a negative signed integer.
+		The result should remain unsigned.
+
+
+	Fix:
+		DEF0099: The application of unary minus to an unsigned integer constant,
+ 		e.g. -2U, is incorrectly evaluated as a negative signed integer.
+		The result should remain unsigned.
+
+	Fix:
+		DEF0100: Coan may crash when processing a #define directive where the
+		definition of the symbol is continued over multiple lines.
+
+		Coan sizes an initial allocation of heap buffer from the length of the
+		first line of the definition and then consumes discardable characters
+		before begining to parse the definition. But If the first line of the
+		multi-line definition consists only of whitespace and a line-continuation,
+		then consumption of discardable characters brings parsing to the start of
+		the next line, which may be longer than the initial buffer, causing
+		parsing of the next line to overrun the initial heap allocation. A crash
+		results on the next attempted heap allocation.
+
+		The fix is not to discard any characters before the parsing loop is
+		entered, since accounting of heap resource is done accurately within it.
+
+	Fix:
+		DEF0101: Coan fails to terminate a symbol's definition when it is
+		followed adjacently by a multi-line comment, e.g. in:
+
+		#define NUM_OF_BITS_FOR_UL_CCCH_MSG_TYPE 0x02/* space before the comment
+			or a single line comment and it's OK */
+		#ifdef FEATURE_MODEM_MBMS
+		#define NUM_OF_BITS_FOR_DL_MCCH_MSG_TYPE 0x04 /* Number of bits for MCCH
+		Message type*/
+
+		with the effect that the definition of NUM_OF_BITS_FOR_UL_CCCH_MSG_TYPE
+		is parsed as: "0x02 #ifdef FEATURE_MODEM_MBMS"
+
+		It looks like a parse error but actually isn't. Other examples with
+		the same feature are parsed correctly. It is caused when the line-buffer
+		gets reallocated between the calculations of the first and second
+		pointers that are used to locate the definition in the buffer. This can
+		result in the calculated length of the definition being arbitrarily
+		inaccurate.
+
+		The fix is ensure the delimiting pointers reflect any reallocation of
+		the line-buffer.
+
+	Fix:
+		DEF0102: Bug report:
+
+		#if (T_XXXXX && L_M)
+		#endif
+
+		#if ( T_XXXXX && L_M )
+		#endif
+
+		At the first #if containing the symbol L_M, coan terminates with the error:
+
+		Missing ")" in "#if (T_XXXXX && L_M)"
+
+		This parse error can occur for any symbol beginning with 'L'. Failure to
+		parse a wide-character constant from that point terminates the parse,
+		but it should resume from the 'L' to attempt to parse a symbol.
+
+	Fix:
+		DEF0103: The "?:" operator is now supported.  
+
+	New:
+		FEA0028: Macro-expansion supported. Macro-definitions that are
+		encountered in source are now parsed and will be used to expand
+		macro-invocations when evaluating directives. There is no support
+		for user-defined macros in the commandline options.
+
+	New:
+		FEA0029: A new coan comand `spin' is supported. With the new option
+		--dir DIRANME, this command acts like the `source' command, with the
+		addition that all output files are written under the directory DIRNAME
+		with the same relative structure that the input files have in the
+		root filesystem.
+
+	New:
+		REW0017: Coan is ported to C++. The porting is of variable thoroughness
+		and leaves countless infelicties to be addressed. Work in progress.       
+
+	Doc:
+		DOC0003: Wholesale re-writing of the Doxygen documentation.
+		
+coan v5.1 Mike Kinghan 2012-02-07
+
+    Fix:
+        DEF0104: The --debug option withdrawn in v5.0 remains documented in the
+        man page and --help output.
+        
+    New:
+        FEA0030: An in-source #define SYM or #undef SYM directive is transiently
+        treated as a -DSYM or -USYM option within the source file where it is
+        found. Provide an option to suppress this behaviour at the user's risk,
+        possibly causing coan's keep-or-drop decisions to deviate from those the
+        preprocessor would make. Requested by Qualcomm UK.
+
+coan v5.1.1 Mike Kinghan 2012-04-25
+
+    Fix:
+        DEF0105: Deletion of superflous parentheses could in some cases
+		leave no whitespace between a directive keyword and the simplified
+		body of the directive.
+		
+    Fix:
+        DEF0106: The --line option was ineffective in conjunction with
+		--replace.
+		
+    Fix:
+        DEF0107: The --line option was accepted together with either
+		--discard blank or --discard comment although these pairs of are
+		options are mutually exclusive.
+		
+	Fix:
+        DEF0107: The --discard blank and--discard comment options were
+		ineffective in the spin command.
+		
+	Fix:
+        DEF0108: The parser parameter to stop at a double-quote is set
+		for parsing #include directives but not cleared when done,
+		so that if a string literal containing a comment-opener token,
+		e.g. "/*" is scanned before any other directive the opening
+		quote stops the parser and a new scan immediately commences
+		which detects the opening of a genuine comment. Text is then
+		erroneously discarded until some condition forces comment-
+		parsing to stop.
+		
+coan v5.1.2 Mike Kinghan 2012-06-04
+
+    Fix:
+        DEF0109: Coan erroneously required whitespace to be found
+        between the definiendum of a macro and the definiens,
+        faulting such valid cases as:
+        
+        #define FOO/*Comment*/
+        #define MACRO/*Comment*/bar
+        
+    New:
+        Support for the clang C++ compiler >= v3.1 is introduced.
+
+coan v5.2 Mike Kinghan 2013-09-07
+
+    Fix: 
+		DEF0110: Coan deleted indentation from simplified directives.
+
+    Fix: 
+		DEF0111: UTF-8 encodings of 4 bytes were not identified.
+
+    Fix: 
+		DEF0112: The output of the `symbols` command with option `--evalsyms` 
+		could be corrupted by retention of logically deleted characters.
+
+    Fix: 
+		DEF0113: The `spin` command was broken on OS X due to a parochially Linux
+        assumption about the `errno` set by `mkdir()` failure for an 
+        already-existing directory.
+
+    Fix: 
+		DEF0114: With the `--replace` option a rewritten input file could have 
+		changed permissions.
+        
+    Fix: 
+		DEF0115: Symbols could be prematurely marked up-to-date for resolution,
+		causing out-of-date resolved values to be reported with 
+		`symbols --evalsyms` or new resolved values to go unreported with 
+		`--once`.
+		
+	Fix:
+		DEF0116: Symbols were not reported for `symbols --evalsyms` when 
+		encountered in the resolution of another symbol.
+
+    New:
+        FEA0031: Added option `--explain` for the `sybols` command. In reporting
+        the resolved value of a symbol `sym`, coan will also recursively report 
+        the resolution of each symbol that is resolved in the course of 
+        resolving `sym`.
+
+    New:
+        FEA0032: Added option `--select name1[*][,name2[*]...]` for the 
+        `symbols` command. Restricts reported symbols to those that match one 
+        of the listed names or wildcard name prefixes.
+
+coan v6.0 Mike Kinghan 2014-08-15
+
+    Fix:
+        DEF0117: Diagnostics that cited an input line in its supposedly original
+        form did not include any extensions of the line after a 
+        line-continuation.
+
+    Fix:
+        DEF0118: The `--filter` option was broken for filenames that include 
+        multiple '.', by seeking to match extensions from the first '.' in the 
+        leafname rather than the last. Thus `--filter cpp` would fail to match a
+        filename `a.b.cpp`.
+
+    Fix: 
+        DEF0119: The comma-operator was not accepted in preprocessor expressions.
+
+	Fix:
+		DEF0120: Macro expansion was broken when arguments shadow formal 
+		parameters. Macro-expansion has been re-written from scratch.
+
+	Fix:
+		DEF0121: False positives for circular symbol definitions. A function-like
+		macro that invoked with an argument that is another call to the same 
+		macro was falsely diagnosed as having a circular definition. 
+		Fixed in macro-expansion re-write.
+
+	Fix:
+		DEF0122: Ternary conditional expressions were not simplified when they 
+		could be.
+
+	Fix:
+		DEF0123: Ill-formed expressions provoked diagnostics only in the 
+		`source` command. The other the other commands correctly evaluated them
+		as insoluble but do not diagnose them.
+
+	Fix:
+		DEF0124: Diagnostics may truncate a cited input line. Diagnostics that 
+		cited an input line in its supposedly original form did not include any 
+		extensions of the line after a line-continuation.
+
+	Fix:
+		DEF0125: The associativity of arithmetic operators was wrongly 
+		right-to-left, not left-to-right, so an arithmetic expression in three 
+		or more unparenthisized operands of co-precedent operators was wrongly 
+		calculated, e.g. 2-21-21 as 2 instead of -40.
+
+	Fix:
+		DEF0126: Garbage in #if/​#elif not an error. Coan issues a warning if 
+		excess tokens follow a directive. Where the directive is #if or #elif 
+		the argument must be an expression, so an error should be diagnosed.
+
+	Fix: 
+		DEF0127: Macro calls to unconfigured symbols not diagnosed. A 
+		function-like macro call e.g. FOO(x) with FOO not a configured symbol 
+		was not diagnosed. The call was silently unresolved.
+
+	Fix:
+		DEF0128: Evaluation of a character literal was skipped when it was the 
+		very first token in a directive argument, e.g.
+
+			#define FOO 'x'
+			#if 'x' == FOO // 'x' not evaluated, expression is unresolved
+			
+	Fix:
+		DEF0129: C++11 character literal prefixes 'u' and 'U' were not recognized.
+		
+	Fix:
+		DEF0130: UCN character literals, e.g. '\u89AB,\U6789ABCD` were not 
+		recognized and cause a knock-on parsing bug by leaving the parser in a
+		false "in-quotation"-state after the end of the UCN literal.
+		
+	Fix:
+		DEF0131: Coan fails to allow the expansion of a macro argument to a 
+		system-include name or quoted string, thus faulting a valid macro call 
+		such a `HAS_INCLUDE(<string>)` or `HAS_INCLUDE("string")`
+
+	New:
+		TST0007: The test suite is migrated from perl to python
+
+	New:
+		TST0008: The test suite is migrated from the autotools serial harness to the
+		parallel harness.
+        		
+	New:
+		REW0018: `--explain` option reworked. The `--explain` option of the 
+		`symbols` command is re-thought to show much more clearly and concisely 
+		the derivation of each macro expansion. It now reports successive steps 
+		of macro replacement for the explained invocation rather than 
+		recursively reporting the "most resolved form" of each macro invocation
+		in the expained invocation.
+
+    New:
+        REW0019: Reporting for the `symbols` command now always reports the 
+        provenance of a reported symbol: configured global, configured transient
+        or unconfigured.
+
+	New:
+		REW0020: The `--once` option is removed and replaced by two new options
+		`--once-only` and `--once-per-file`. The former is equivalent to the 
+		old `--once`. The latter causes each distinct reported item to be 
+		reported just once per input file.
+
+	New:
+		REW0021: Lexical scanning and expression parsing are re-written more 
+		efficiently, with the result that coan 6.0 processes files on average 
+		about twice as fast as coan 5.2
+
+	New:
+		REW0022: Coan 6.0 is written entirely to the C++11 standard. Preprocessor
+		differentiation to support compiler versions that lag the standard is
+		removed and distro-versions that ship such compiler versions are not
+		supported.        
+
+    New:
+		FEA0033: The `--evalsyms` option of the `symbols` command is removed and
+		replaced with the `--expand` option. `--evalsyms` reported the 
+		"most resolved form" (MRF) of a symbol invocation, which was of little 
+		investigative use. `--expand` reports the full macro expansion of a 
+		symbol invocation, and the integer to which it evaluates, if any.
+          
+    New:
+        FEA0034: The new command `lines` is added, which causes coan to report 
+        `#line`  directives. A corresponding option `--lns` is provided for the 
+        `symbols` command, causing coan to consider only `#line` directives for
+        reporting symbols.
+
+	New:
+		FEA0035: The alternative operator keywords, `and`, `or`, `not`, etc. are
+		now supported.
+		
+	New:
+		FEA0036: Coan now issues an informational diagnostic whenever a
+		`#define` or `#undef` retrospectively affects the meaning of previously
+		defined symbols. 

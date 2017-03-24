@@ -1,0 +1,6 @@
+BAR: global: expands afresh as >>3<<: evaluates to 3: in options
+FOO: global: expands afresh as >>(1+1)<<: evaluates to 2: in options
+FOO: global: expands unchanged as >>(1+1)<<: evaluates to 2
+BAR: global: expands unchanged as >>3<<: evaluates to 3
+SYM: transient: insoluble, because of infinite regress
+SYM: transient: insoluble, because of infinite regress

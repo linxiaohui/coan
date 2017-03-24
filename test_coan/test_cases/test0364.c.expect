@@ -1,0 +1,22 @@
+Expanding "FOO in options
+Edit #001: >>1<<
+FOO: global: def. >>1<<: expands afresh as >>1<<: evaluates to 1: in options
+Expanding "BAR in options
+Edit #001: >>FOO<<
+Edit #002: >>1<<
+BAR: global: def. >>FOO<<: expands afresh as >>1<<: evaluates to 1: in options
+Expanding "SYM in options
+Edit #001: >>BAR<<
+Edit #002: >>FOO<<
+Edit #003: >>1<<
+SYM: global: def. >>BAR<<: expands afresh as >>1<<: evaluates to 1: in options
+Expanding "VAL in options
+Edit #001: >>0<<
+VAL: global: undef: expands afresh as >>0<<: evaluates to 0: in options
+Expanding "VAR in options
+Edit #001: >>VAL<<
+Edit #002: >>0<<
+VAR: global: def. >>VAL<<: expands afresh as >>0<<: evaluates to 0: in options
+SYM: global: def. >>BAR<<: expands unchanged as >>1<<: evaluates to 1: {CWD}/test_cases/test0364.c(3)
+BAR: global: def. >>FOO<<: expands unchanged as >>1<<: evaluates to 1: {CWD}/test_cases/test0364.c(8)
+VAR: global: def. >>VAL<<: expands unchanged as >>0<<: evaluates to 0: {CWD}/test_cases/test0364.c(11)

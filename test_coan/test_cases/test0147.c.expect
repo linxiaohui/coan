@@ -1,0 +1,15 @@
+
+
+#ifdef FOO1
+	#ifndef FOO2
+
+	#else
+	DELETE ME
+	#endif
+#else
+	#ifdef BAR1
+	DELETE ME
+	#else
+	DELETE ME
+	#endif
+#endif 

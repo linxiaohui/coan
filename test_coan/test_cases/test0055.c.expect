@@ -1,0 +1,6 @@
+/**ARGS: source --conflict error -DFOO1 -UFOO2 */
+/**SYSCODE: = 1 | 2 | 32 | 64 */
+#ifdef UNKNOWN
+#error : inserted by coan: "#define FOO2" contradicts -U or --implicit at {CWD}/test_cases/test0055.c(4)
+#endif
+

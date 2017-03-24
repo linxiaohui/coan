@@ -1,0 +1,4 @@
+/**ARGS: source -DBAR */
+/**SYSCODE: = 16 | 2 | 1 */
+#define FOO 'a'
+KEEP_ME

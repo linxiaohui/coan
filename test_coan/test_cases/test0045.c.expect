@@ -1,0 +1,5 @@
+/**ARGS: source -DFOO1 -UFOO2 */
+/**SYSCODE: = 1 | 2 | 16 | 32 */
+// error : inserted by coan: "#undef FOO1" contradicts -D symbol at {CWD}/test_cases/test0045.c(3)
+KEEP ME
+

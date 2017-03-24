@@ -1,0 +1,28 @@
+Expanding "type_if_not(T,E)" at {CWD}/test_cases/test0420.c(3)
+Edit #001: >>__typeof__(0 ? (T *)0 : (void *)(E))<<
+type_if_not(T,E): transient: def. >>type_if_not(T,E)=__typeof__(0 ? (T *)0 : (void *)(E))<<: expands afresh as >>__typeof__(0 ? (T *)0 : (void *)(E))<<
+Expanding "type_if_not(T,!(E))" at {CWD}/test_cases/test0420.c(4)
+Edit #001: >>__typeof__(0 ? (T *)0 : (void *)(!(E)))<<
+type_if_not(T,!(E)): transient: def. >>type_if_not(T,E)=__typeof__(0 ? (T *)0 : (void *)(E))<<: expands afresh as >>__typeof__(0 ? (T *)0 : (void *)(!(E)))<<
+Expanding "type_if(T,E)" at {CWD}/test_cases/test0420.c(4)
+Edit #001: >>type_if_not(T, !(E))<<
+Edit #002: >>__typeof__(0 ? (T *)0 : (void *)(!(E)))<<
+type_if(T,E): transient: def. >>type_if(T,E)=type_if_not(T, !(E))<<: expands afresh as >>__typeof__(0 ? (T *)0 : (void *)(!(E)))<<
+Expanding "type_comb2(T1,T2)" at {CWD}/test_cases/test0420.c(5)
+Edit #001: >>__typeof__(0 ? (T1)0 : (T2)0)<<
+type_comb2(T1,T2): transient: def. >>type_comb2(T1,T2)=__typeof__(0 ? (T1)0 : (T2)0)<<: expands afresh as >>__typeof__(0 ? (T1)0 : (T2)0)<<
+Expanding "type_comb2(type_if(T1,(E1)),type_if(T2,(!(E1)&&(E2))))" at {CWD}/test_cases/test0420.c(7)
+Edit #001: >>type_comb2(type_if_not(T1, !((E1))),type_if(T2,(!(E1)&&(E2))))<<
+Edit #002: >>type_comb2(__typeof__(0 ? (T1 *)0 : (void *)(!((E1)))),type_if(T2,(!(E1)&&(E2))))<<
+Edit #003: >>type_comb2(__typeof__(0 ? (T1 *)0 : (void *)(!((E1)))),type_if_not(T2, !((!(E1)&&(E2)))))<<
+Edit #004: >>type_comb2(__typeof__(0 ? (T1 *)0 : (void *)(!((E1)))),__typeof__(0 ? (T2 *)0 : (void *)(!((!(E1)&&(E2))))))<<
+Edit #005: >>__typeof__(0 ? (__typeof__(0 ? (T1 *)0 : (void *)(!((E1)))))0 : (__typeof__(0 ? (T2 *)0 : (void *)(!((!(E1)&&(E2))))))0)<<
+type_comb2(type_if(T1,(E1)),type_if(T2,(!(E1)&&(E2)))): transient: def. >>type_comb2(T1,T2)=__typeof__(0 ? (T1)0 : (T2)0)<<: expands afresh as >>__typeof__(0 ? (__typeof__(0 ? (T1 *)0 : (void *)(!((E1)))))0 : (__typeof__(0 ? (T2 *)0 : (void *)(!((!(E1)&&(E2))))))0)<<
+Expanding "first_of2p(T1,E1,T2,E2)" at {CWD}/test_cases/test0420.c(7)
+Edit #001: >>type_comb2(type_if(T1, (E1)), type_if(T2, (!(E1) && (E2))))<<
+Edit #002: >>type_comb2(type_if_not(T1, !((E1))), type_if(T2, (!(E1) && (E2))))<<
+Edit #003: >>type_comb2(__typeof__(0 ? (T1 *)0 : (void *)(!((E1)))), type_if(T2, (!(E1) && (E2))))<<
+Edit #004: >>type_comb2(__typeof__(0 ? (T1 *)0 : (void *)(!((E1)))), type_if_not(T2, !((!(E1)&&(E2)))))<<
+Edit #005: >>type_comb2(__typeof__(0 ? (T1 *)0 : (void *)(!((E1)))), __typeof__(0 ? (T2 *)0 : (void *)(!((!(E1)&&(E2))))))<<
+Edit #006: >>__typeof__(0 ? (__typeof__(0 ? (T1 *)0 : (void *)(!((E1)))))0 : (__typeof__(0 ? (T2 *)0 : (void *)(!((!(E1)&&(E2))))))0))<<
+first_of2p(T1,E1,T2,E2): transient: def. >>first_of2p(T1,E1,T2,E2)=type_comb2(type_if(T1, (E1)), type_if(T2, (!(E1) && (E2))))<<: expands afresh as >>__typeof__(0 ? (__typeof__(0 ? (T1 *)0 : (void *)(!((E1)))))0 : (__typeof__(0 ? (T2 *)0 : (void *)(!((!(E1)&&(E2))))))0))<<

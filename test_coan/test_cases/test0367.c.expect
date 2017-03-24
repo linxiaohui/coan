@@ -1,0 +1,10 @@
+Expanding "BAR in options
+Edit #001: >>3<<
+BAR: global: def. >>3<<: expands afresh as >>3<<: evaluates to 3: in options
+Expanding "FOO in options
+Edit #001: >>(1+1)<<
+FOO: global: def. >>(1+1)<<: expands afresh as >>(1+1)<<: evaluates to 2: in options
+FOO: global: def. >>(1+1)<<: expands unchanged as >>(1+1)<<: evaluates to 2: {CWD}/test_cases/test0367.c(3)
+BAR: global: def. >>3<<: expands unchanged as >>3<<: evaluates to 3: {CWD}/test_cases/test0367.c(3)
+SYM: transient: def. >>(FOO And (FOO SYM BAR) And BAR)<<: insoluble, because of infinite regress: {CWD}/test_cases/test0367.c(3)
+SYM: transient: def. >>(FOO And (FOO SYM BAR) And BAR)<<: insoluble, because of infinite regress: {CWD}/test_cases/test0367.c(4)

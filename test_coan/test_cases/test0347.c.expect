@@ -1,0 +1,7 @@
+/**ARGS: source -DFOO=1 -DBAR=0 */
+/**SYSCODE: = 1 | 16 */
+
+KEEP_ME
+
+KEEP_ME
+

@@ -1,0 +1,7 @@
+/**ARGS: source -DFOO=X -UBAR*/
+/**SYSCODE: = 32 | 1 */
+#if FOO == 3
+KEEP ME
+#else
+DELETE ME
+#endif

@@ -1,0 +1,9 @@
+/**ARGS: source -UPYGMALION -UABELONE */
+/**SYSCODE: = 1 | 32 */
+
+#if  defined MACOSX && defined ABYSSINIA
+extern int i;
+#endif
+#if  defined MACOSX && defined ABYSSINIA
+extern int j;
+#endif

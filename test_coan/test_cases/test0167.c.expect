@@ -1,0 +1,5 @@
+FOO1: unconfigured: {CWD}/test_cases/test0167.c(3)
+FOO2: unconfigured: {CWD}/test_cases/test0167.c(6)
+FOO3: unconfigured: {CWD}/test_cases/test0167.c(8)
+FOO4: unconfigured: {CWD}/test_cases/test0167.c(8)
+FOO5: unconfigured: {CWD}/test_cases/test0167.c(10)

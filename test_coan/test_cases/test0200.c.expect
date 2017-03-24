@@ -1,0 +1,1 @@
+#include FOO: symbolic argument, expands as >>"foo.h<<: {CWD}/test_cases/test0200.c(4)

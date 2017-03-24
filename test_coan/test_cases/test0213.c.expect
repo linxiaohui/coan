@@ -1,0 +1,2 @@
+FOO: global: {CWD}/test_cases/test0213.c(3)
+BAR: global: {CWD}/test_cases/test0213.c(14)

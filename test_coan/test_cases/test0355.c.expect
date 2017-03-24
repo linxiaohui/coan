@@ -1,0 +1,19 @@
+/**ARGS: source --no-transients -DB */
+/**SYSCODE: = 32 | 16 | 2 | 1  */
+
+#define A 1
+
+// error : inserted by coan: "#undef B" contradicts -D symbol at {CWD}/test_cases/test0355.c(5)
+#ifdef A
+KEEP THIS AND IFDEF
+#endif
+
+
+#if A
+KEEP THIS AND IF
+#endif
+
+#if !A
+KEEP THIS AND IF
+#endif
+

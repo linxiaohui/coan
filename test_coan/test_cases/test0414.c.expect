@@ -1,0 +1,2 @@
+FOO: global: expands afresh as >>5<<: evaluates to 5: in options
+FOO: global: expands unchanged as >>5<<: evaluates to 5

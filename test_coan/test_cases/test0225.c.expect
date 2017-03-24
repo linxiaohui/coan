@@ -1,0 +1,3 @@
+/**ARGS: source -DA=1 -DB=0 "-DC=(1 && 0)" */
+/**SYSCODE: = 1 | 16 */
+KEEP ME

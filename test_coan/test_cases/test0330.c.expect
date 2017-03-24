@@ -1,0 +1,2 @@
+/**ARGS: source -DFOO=1 -DBAR=0  */
+/**SYSCODE: = 4 */

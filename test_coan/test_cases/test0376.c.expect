@@ -1,0 +1,6 @@
+Expanding "CD" at {CWD}/test_cases/test0376.c(6)
+Edit #001: >>(BC * AB)<<
+Edit #002: >>((AB + AB) * AB)<<
+Edit #003: >>((2 + 2) * 2)<<
+CD: transient: def. >>(BC * AB)<<: expands afresh as >>((2 + 2) * 2)<<: evaluates to 8: {CWD}/test_cases/test0376.c(6)
+CD: transient: def. >>(BC * AB)<<: expands unchanged as >>((2 + 2) * 2)<<: evaluates to 8: {CWD}/test_cases/test0376.c(8)

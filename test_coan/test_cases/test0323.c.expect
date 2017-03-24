@@ -1,0 +1,6 @@
+/**ARGS: source "-DFOO(x)=x+1" "-DBAR(x,y)=x-y"  */
+/**SYSCODE: = 1 | 16 */
+KEEP ME
+KEEP ME
+KEEP ME
+

@@ -1,0 +1,22 @@
+/**ARGS: source -DNUM=1  */
+/**SYSCODE: = 1 | 2 | 16 */
+#define F\
+OO\
+(x\
+x\
+,yy\
+)\
+ xx\
+*\
+yy
+
+#define\
+ BA\
+R(\
+x,\
+y)\
+ x-\
+y
+ 
+KEEP ME
+KEEP ME

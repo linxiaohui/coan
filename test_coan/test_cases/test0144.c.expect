@@ -1,0 +1,7 @@
+/**ARGS: source -E -DFOO1=BAR */
+/**SYSCODE: = 1 | 32 */
+#if ! FOO1
+KEEP ME
+#else
+KEEP ME
+#endif

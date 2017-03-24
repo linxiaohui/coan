@@ -1,0 +1,15 @@
+/**ARGS: source -UUNDEF  */
+/**SYSCODE: = 1 | 2 | 16 */
+
+#ifdef UNKNOWN
+#define FOO
+#endif
+
+#define BAR
+
+#ifdef FOO
+KEEP ME
+#endif
+
+KEEP ME
+

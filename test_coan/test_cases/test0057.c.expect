@@ -1,0 +1,7 @@
+/**ARGS: source -DFOO1 -UFOO2 */
+/**SYSCODE: = 1 | 2 | 16 | 32 */
+#ifdef UNKNOWN
+KEEP ME
+// error : inserted by coan: "#define FOO2" contradicts -U or --implicit at {CWD}/test_cases/test0057.c(5)
+#endif
+KEEP ME

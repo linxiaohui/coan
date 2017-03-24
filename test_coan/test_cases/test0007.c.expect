@@ -1,0 +1,4 @@
+/**ARGS: source -UFOO1 -DFOO2 */
+/**SYSCODE: = 1 | 16 */
+KEEP ME
+
