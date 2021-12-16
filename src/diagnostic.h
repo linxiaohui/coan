@@ -295,7 +295,7 @@ protected:
 	}
 
 	/// Emit the diagnostic
-	void despatch() const throw (unsigned);
+	void despatch() const;
 
 	/// Is the diagnostic suppressed?
 	bool _gagged;
