@@ -84,7 +84,7 @@ diagnostic_base::diagnostic_base(std::string const & severity_name,
 	      << hex << setw(5) << reason << ": " << dec;
 }
 
-void diagnostic_base::despatch() const throw(unsigned)
+void diagnostic_base::despatch() const
 {
 	count();
 	if (!text().empty()) {
